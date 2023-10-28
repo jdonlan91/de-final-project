@@ -3,7 +3,7 @@
 As Stian mentioned, **autopep8** has a few quirks. Danika recommended Black to me as well; instructions on how to install and enable are below.
 
 1. Install Black extension for VS Code:  
-<a href="https://marketplace.visualstudio.com/items?itemName=ms-python.black-formatter" target="_blank">https://marketplace.visualstudio.com/items?itemName=ms-python.black-formatter</a>
+https://marketplace.visualstudio.com/items?itemName=ms-python.black-formatter
 
 2. Set Black to be the default formatter for Python Code:
 
@@ -33,7 +33,7 @@ Black will not format commented out code, for instance, lines of code longer tha
 ## Using PythonChecker To Validate Code
 
 You can also use this site to validate Python code:  
-<a href="https://www.pythonchecker.com/" target="_blank">www.pythonchecker.com/</a>
+https://www.pythonchecker.com/.  
 
 Just copy and paste your Python into the online editor, and it will flag any lines that are not Pep 8 compliant.
 
@@ -47,6 +47,6 @@ def format_sales(stock=None, staff=None, sales=None):
 ```
 
 There is more information on this in the Pep 8 style guide:  
-<a href="https://peps.python.org/pep-0008/#other-recommendations" target="_blank">https://peps.python.org/pep-0008/#other-recommendations</a>
+https://peps.python.org/pep-0008/#other-recommendations
 
 Please add any other exceptions here!
