@@ -1,0 +1,48 @@
+de-final-project/
+    ├── .github/
+    │   ├── workflows
+    │   │   ├── github-workflow.yaml
+    │   │   ├── ...
+    ├── config/
+    │   ├── ...
+    ├── data/
+    │   ├── ...
+    ├── src/
+    │   ├── __init__.py
+    │   ├── main.py
+    │   ├── ingester/
+    │   │   ├── ingester_module1.py
+    │   │   ├── ingester_module2.py
+    │   │   ├── ...
+    │   ├── processor/
+    │   │   ├── processor_module1.py
+    │   │   ├── processor_module2.py
+    │   │   ├── ...
+    │   ├── data_loader/
+    │   │   ├── data_loader_module1.py
+    │   │   ├── data_loader_module2.py
+    │   │   ├── ...
+    │   ├── ...
+    ├── tests/
+    │   ├── __init__.py
+    │   ├── test_ingester/
+    │   │   ├── test_ingester_module1.py
+    │   │   ├── test_ingester_module2.py
+    │   │   ├── ...
+    │   ├── test_processor/
+    │   │   ├── test_processor_module1.py
+    │   │   ├── test_processor_module2.py
+    │   │   ├── ...
+    │   ├── test_data_loader/
+    │   │   ├── test_data_loader_module1.py
+    │   │   ├── test_data_loader_module2.py
+    │   │   ├── ...
+    ├── scripts/
+    │   ├── ...
+    ├── tf/
+    │   ├── main.tf
+    │   ├── vars.tf
+    │   ├── ...
+    ├── .gitignore
+    ├── README.md
+    ├── requirements.txt
