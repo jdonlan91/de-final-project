@@ -11,31 +11,39 @@ de-final-project/
     │   ├── __init__.py
     │   ├── main.py
     │   ├── ingester/
-    │   │   ├── ingester_module1.py
-    │   │   ├── ingester_module2.py
-    │   │   ├── ...
+    │   │   ├── ingester_lambda.py
+    │   │   ├── fetch_data.py
+    │   │   ├── convert_to_csv.py
+    │   │   ├── dump_data.py
     │   ├── processor/
-    │   │   ├── processor_module1.py
-    │   │   ├── processor_module2.py
+    │   │   ├── processor_lambda.py
+    │   │   ├── read_data.py
+    │   │   ├── transform_data.py
+    │   │   ├── convert_data_to_parquet.py
+    │   │   ├── dump_parquet.py
     │   │   ├── ...
-    │   ├── data_loader/
-    │   │   ├── data_loader_module1.py
-    │   │   ├── data_loader_module2.py
+    │   ├── loader/
+    │   │   ├── loader_lambda.py
+    │   │   ├── loader_module2.py
     │   │   ├── ...
     │   ├── ...
     ├── tests/
     │   ├── __init__.py
     │   ├── test_ingester/
-    │   │   ├── test_ingester_module1.py
-    │   │   ├── test_ingester_module2.py
-    │   │   ├── ...
+    │   │   ├── test_ingester_lambda.py
+    │   │   ├── test_fetch_data.py
+    │   │   ├── test_convert_to_csv.py
+    │   │   ├── test_dump_data.py
     │   ├── test_processor/
-    │   │   ├── test_processor_module1.py
-    │   │   ├── test_processor_module2.py
+    │   │   ├── test_processor_lambda.py
+    │   │   ├── test_read_data.py
+    │   │   ├── test_transform_data.py
+    │   │   ├── test_convert_data_to_parquet.py
+    │   │   ├── test_dump_parquet.py
     │   │   ├── ...
-    │   ├── test_data_loader/
-    │   │   ├── test_data_loader_module1.py
-    │   │   ├── test_data_loader_module2.py
+    │   ├── test_loader/
+    │   │   ├── test_loader_lambda.py
+    │   │   ├── test_loader_module2.py
     │   │   ├── ...
     ├── scripts/
     │   ├── ...
