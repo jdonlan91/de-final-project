@@ -89,7 +89,7 @@ resource "aws_iam_role" "ingestor_lambda_role" {
 resource "aws_iam_policy_attachment" "ingestor_lambda_s3_policy_attachment" {
   name       = "IngestorLambdaRoleWritePolicyAttachment"
   roles      = [aws_iam_role.ingestor_lambda_role.name]
-  policy_arn = aws_iam_policy.s3_ingested_write_policy
+  policy_arn = aws_iam_policy.s3_ingested_write_policy.arn
 }
 
 resource "aws_iam_role" "processor_lambda_role" {
@@ -146,6 +146,6 @@ resource "aws_iam_role" "loader_lambda_role" {
 
 resource "aws_iam_policy_attachment" "loader_lambda_s3_read_policy_attachment" {
   name       = "LoaderLambdaRoleReadPolicyAttachment"
-  roles      = [aws_iam_role.Loader_lambda_role.name]
+  roles      = [aws_iam_role.loader_lambda_role.name]
   policy_arn = aws_iam_policy.s3_processed_read_policy.arn
 }
