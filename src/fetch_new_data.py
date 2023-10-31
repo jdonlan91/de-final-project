@@ -1,3 +1,10 @@
+from os import environ
+from pg8000.native import Connection
+from dotenv import load_dotenv
+
+# Initialise environment variables from a .env file
+load_dotenv()
+
 # To allow us to identify new data that has appeared
 # since the last invocation of this function on a particular table,
 # we can use use a WHERE clause for the last_updated column (if it exists)
@@ -7,6 +14,8 @@
 # ! If we do this, we'd probably need a second parameter for the interval !
 
 # The ERD shows that all the production tables have a last_updated column
+
+
 def fetch_new_data(table_name: str) -> list[dict]:
     """Selects data with SQL from a specified table
     and returns the rows as a list of dictionaries
@@ -17,4 +26,5 @@ def fetch_new_data(table_name: str) -> list[dict]:
         Returns:
                 <list[dict]>
     """
-    pass
+    conn = Connection(environ['DB_USERNAME'],
+                      environ['DB_HOST'], password=['DB_PASSWORD'])
