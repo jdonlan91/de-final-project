@@ -146,6 +146,6 @@ resource "aws_iam_role" "loader_lambda_role" {
 
 resource "aws_iam_policy_attachment" "loader_lambda_s3_read_policy_attachment" {
   name       = "LoaderLambdaRoleReadPolicyAttachment"
-  roles      = [aws_iam_role.Loader_lambda_role.name]
+  roles      = [aws_iam_role.loader_lambda_role.name]
   policy_arn = aws_iam_policy.s3_processed_read_policy.arn
 }
