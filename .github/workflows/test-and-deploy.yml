@@ -1,0 +1,22 @@
+name: Test and Deploy
+on: [push]
+
+jobs:
+  run-checks:
+    name: Run Checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: Use Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - name: Install Make
+        run: sudo apt install make -y
+      - name: Set up application dependencies
+        run: make requirements
+      - name: Set up dev dependencies
+        run: make dev-setup
+      - name: Run checks
+        run: make run-checks
