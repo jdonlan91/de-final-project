@@ -1,7 +1,7 @@
-from moto import mock_s3
-import pytest
 import os
+import pytest
 import boto3
+from moto import mock_s3
 from src.ingester.dump_data import dump_data
 
 
@@ -42,12 +42,22 @@ def test_csv():
 class TestDumpData:
     def test_returns_a_string(self, test_csv, empty_bucket):
         assert (
-            dump_data("test_table", "31-10-23-152600", test_csv, "test_ingested_bucket")
-            == "Data dumped successfully!"
+            dump_data(
+                "test_table",
+                "31-10-23-152600",
+                test_csv,
+                "test_ingested_bucket"
+            ) == "Data dumped successfully!"
         )
 
     def test_puts_csv_file_in_bucket(self, s3, test_csv, empty_bucket):
-        dump_data("test_table", "31-10-23-152600", test_csv, "test_ingested_bucket")
+        dump_data("test_table", "31-10-23-152600",
+                  test_csv, "test_ingested_bucket")
         response = s3.list_objects(Bucket="test_ingested_bucket")
         filename = response["Contents"][0]["Key"]
         assert filename == "test_table-31-10-23-152600.csv"
+
+    def test_raises_an_error(self, test_csv):
+        with pytest.raises(Exception):
+            dump_data('test_table', '31-10-152600',
+                      test_csv, "invalid-bucket-011123")
