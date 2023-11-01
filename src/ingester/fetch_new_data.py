@@ -3,7 +3,7 @@ from pg8000.native import Connection
 from dotenv import load_dotenv
 
 # Initialise environment variables from a .env file
-load_dotenv()
+# load_dotenv()
 
 # To allow us to identify new data that has appeared
 # since the last invocation of this function on a particular table,
@@ -26,5 +26,8 @@ def fetch_new_data(table_name: str) -> list[dict]:
         Returns:
                 <list[dict]>
     """
-    conn = Connection(environ['DB_USERNAME'],
-                      environ['DB_HOST'], password=['DB_PASSWORD'])
+    # conn = Connection(
+    #     environ["DB_USERNAME"], environ["DB_HOST"], password=["DB_PASSWORD"]
+    # )
+
+    return 'Hello'
