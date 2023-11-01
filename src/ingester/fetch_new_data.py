@@ -3,7 +3,8 @@ from pg8000.native import Connection
 from dotenv import load_dotenv
 
 # Initialise environment variables from a .env file
-# load_dotenv()
+load_dotenv()
+
 
 # To allow us to identify new data that has appeared
 # since the last invocation of this function on a particular table,
@@ -16,7 +17,9 @@ from dotenv import load_dotenv
 # The ERD shows that all the production tables have a last_updated column
 
 
-def fetch_new_data(table_name: str) -> list[dict]:
+def fetch_new_data(table_name: str, db_credentials) -> list[dict]:
+    print('inside the fetch_new_data file')
+
     """Selects data with SQL from a specified table
     and returns the rows as a list of dictionaries
 
@@ -26,8 +29,10 @@ def fetch_new_data(table_name: str) -> list[dict]:
         Returns:
                 <list[dict]>
     """
-    # conn = Connection(
-    #     environ["DB_USERNAME"], environ["DB_HOST"], password=["DB_PASSWORD"]
-    # )
+    conn = Connection(
+        user=db_credentials["DB_USERNAME"], password=db_credentials[
+            "DB_PASSWORD"], host=db_credentials["DB_HOST"], database=db_credentials["DB_NAME"]
+    )
 
+    print(conn.run('SELECT * FROM staff'))
     return 'Hello'
