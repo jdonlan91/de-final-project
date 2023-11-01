@@ -1,10 +1,6 @@
 from os import environ
-from pg8000.native import Connection
+from pg8000.native import Connection, identifier, literal
 from dotenv import load_dotenv
-
-# Initialise environment variables from a .env file
-load_dotenv()
-
 
 # To allow us to identify new data that has appeared
 # since the last invocation of this function on a particular table,
@@ -17,9 +13,7 @@ load_dotenv()
 # The ERD shows that all the production tables have a last_updated column
 
 
-def fetch_new_data(table_name: str, db_credentials) -> list[dict]:
-    print('inside the fetch_new_data file')
-
+def fetch_new_data(table_name: str, timestamp, db_credentials) -> list[dict]:
     """Selects data with SQL from a specified table
     and returns the rows as a list of dictionaries
 
@@ -34,5 +28,15 @@ def fetch_new_data(table_name: str, db_credentials) -> list[dict]:
             "DB_PASSWORD"], host=db_credentials["DB_HOST"], database=db_credentials["DB_NAME"]
     )
 
-    print(conn.run('SELECT * FROM staff'))
-    return 'Hello'
+#     print(conn.columns)
+    query = f'''SELECT * FROM {identifier(table_name)}
+                       WHERE last_updated > {literal(timestamp)}'''
+    results_list_of_lists = conn.run(query)
+    column_names = [column['name'] for column in conn.columns]
+    results_list_of_dicts = []
+    for row in results_list_of_lists:
+        row_dictionary = {}
+        for i in range(len(column_names)):
+            row_dictionary[column_names[i]] = row[i]
+        results_list_of_dicts.append(row_dictionary)
+    return results_list_of_dicts

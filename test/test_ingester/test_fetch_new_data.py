@@ -3,6 +3,7 @@ from src.ingester.fetch_new_data import fetch_new_data
 import pytest
 from dotenv import load_dotenv
 from os import environ
+from datetime import datetime
 
 # load_dotenv()
 # db_credentials = {
@@ -24,7 +25,47 @@ def db_credentials():
     }
 
 
-def test_example(db_credentials):
-    fetch_new_data('test_table', db_credentials)
-    print()
-    assert False
+@pytest.fixture
+def three_rows_from_staff():
+    return [
+        {
+            "staff_id": 1,
+            "first_name": "Jeremie",
+            "last_name": "Franey",
+            "department_id": 2,
+            "email_address": "jeremie.franey@terrifictotes.com",
+            "created_at": "2022-11-03 14:20:51.563",
+            "last_updated": '2022-11-03 14:20:51.563'
+        },
+        {
+            "staff_id": 2,
+            "first_name": "Deron",
+            "last_name": "Beier",
+            "department_id": 6,
+            "email_address": "deron.beier@terrifictotes.com",
+            "created_at": "2022-11-03 14:20:51.563",
+            "last_updated": '2022-11-03 14:20:51.563'
+        },
+        {
+            "staff_id": 3,
+            "first_name": "Jeanette",
+            "last_name": "Erdman",
+            "department_id": 6,
+            "email_address": "jeanette.erdman@terrifictotes.com",
+            "created_at": "2022-11-03 14:20:51.563",
+            "last_updated": '2022-11-03 14:20:51.563'
+        }
+    ]
+
+
+def test_if_no_new_data_returns_empty_list(db_credentials):
+    assert fetch_new_data('staff', datetime(
+        2023, 1, 1, 14, 20, 51, 563000), db_credentials) == []
+
+
+def test_if_table_contains_new_data_returns_list_of_dictionaries(db_credentials, three_rows_from_staff):
+    test_table_name = 'staff'
+    test_timestamp = datetime(
+        2021, 1, 1, 14, 20, 51, 563000)
+    output = fetch_new_data(test_table_name, test_timestamp, db_credentials)
+    assert output[:3] == three_rows_from_staff
