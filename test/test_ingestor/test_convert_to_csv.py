@@ -1,4 +1,4 @@
-from src.ingester.utils.convert_to_csv import convert_to_csv
+from src.ingestor.utils.convert_to_csv import convert_to_csv
 import pytest
 
 
