@@ -11,21 +11,27 @@ de-final-project/
     │   ├── __init__.py
     │   ├── main.py
     │   ├── ingester/
-    │   │   ├── ingester_lambda.py
-    │   │   ├── fetch_data.py
-    │   │   ├── convert_to_csv.py
-    │   │   ├── dump_data.py
+    │   │   ├── utils/
+    │   │   │   ├── fetch_data.py
+    │   │   │   ├── convert_to_csv.py
+    │   │   │   ├── dump_data.py
+    │   │   │   ├── requirements.txt
+    │   │   ├── ingester.py
+    │   │   ├── ingester.zip
+    │   │   ├── utils.zip
     │   ├── processor/
-    │   │   ├── processor_lambda.py
-    │   │   ├── read_data.py
-    │   │   ├── transform_data.py
-    │   │   ├── convert_data_to_parquet.py
-    │   │   ├── dump_parquet.py
-    │   │   ├── ...
+    │   │   ├── utils/
+    │   │   │   ├── read_data.py
+    │   │   │   ├── transform_data.py
+    │   │   │   ├── convert_data_to_parquet.py
+    │   │   │   ├── dump_parquet.py
+    │   │   │   ├── requirements.txt
+    │   │   ├── processor.py
+    │   │   ├── processor.zip
+    │   │   ├── utils.zip
     │   ├── loader/
     │   │   ├── loader_lambda.py
-    │   │   ├── loader_module2.py
-    │   │   ├── ...
+    │   │   ├── loader_lambda.zip
     │   ├── ...
     ├── tests/
     │   ├── __init__.py
