@@ -1,4 +1,4 @@
-from src.ingester.convert_to_csv import convert_to_csv
+from src.ingester.utils.convert_to_csv import convert_to_csv
 
 
 def test_return_a_string():
