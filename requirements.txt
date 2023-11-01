@@ -26,7 +26,6 @@ mdurl==0.1.2
 moto==4.2.7
 numpy==1.26.1
 packaging==21.3
-packaging==23.2
 pandas==2.1.2
 pbr==5.11.1
 pg8000==1.30.2
