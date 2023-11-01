@@ -44,10 +44,10 @@ dev-setup: bandit safety flake coverage
 
 security-test:
 	$(call execute_in_env, safety check -r ./requirements.txt)
-	$(call execute_in_env, bandit -lll */*.py *c/*/*.py)
+	$(call execute_in_env, bandit -lll *c/*/*.py *c/*/utils/*.py)
 
 run-flake:
-	$(call execute_in_env, flake8  ./src/*/*.py ./test/*/*.py)
+	$(call execute_in_env, flake8  ./src/*/*.py ./test/*/*.py *c/*/utils/*.py)
 
 unit-test:
 	$(call execute_in_env, PYTHONPATH=${PYTHONPATH} pytest -v)
