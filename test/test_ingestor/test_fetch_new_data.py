@@ -1,5 +1,5 @@
 from dotenv import load_dotenv
-from src.ingester.utils.fetch_new_data import fetch_new_data
+from src.ingestor.utils.fetch_new_data import fetch_new_data
 import pytest
 from os import environ
 from datetime import datetime
