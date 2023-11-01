@@ -4,7 +4,7 @@ resource "aws_cloudwatch_event_rule" "ingester_schedule" {
 
 resource "aws_cloudwatch_event_target" "ingester_target" {
     arn = aws_lambda_function.ingester.arn
-    rule = aws_cloudwatch_event_rule.ingestor_schedule.name
+    rule = aws_cloudwatch_event_rule.ingester_schedule.name
 }
 
 resource "aws_lambda_permission" "ingester_eventbridge_permission" {
