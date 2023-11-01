@@ -41,7 +41,7 @@ jobs:
         run: terraform init
         working-directory: ./tf
       - name: Destroy existing infrastructure
-        run: terraform destroy
+        run: terraform destroy -auto-approve
         working-directory: ./tf
       - name: Create Terraform execution plan
         run: terraform plan
