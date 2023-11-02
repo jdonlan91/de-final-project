@@ -19,13 +19,13 @@ def convert_lists_to_dicts(list_of_lists, column_names):
     list_of_dicts = []
 
     for row in list_of_lists:
-        row_dictionary = {
+        row_as_dict = {
             column_names[i]: cell.isoformat(sep=" ", timespec="milliseconds")
             if type(cell) is datetime
             else cell for i,
             cell in enumerate(row)
         }
-        list_of_dicts.append(row_dictionary)
+        list_of_dicts.append(row_as_dict)
 
     return list_of_dicts
 
