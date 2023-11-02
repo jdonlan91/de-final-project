@@ -25,15 +25,16 @@ def dump_data(table_name, timestamp, csv_data, bucket_name):
         (or writing the file to) the named S3 bucket.
 
     """
-    object_key = generate_object_key(table_name, timestamp)
 
     try:
+
+        filename = generate_object_key(table_name, timestamp)
         client = boto3.client("s3")
 
         response = client.put_object(
             Body=csv_data,
             Bucket=bucket_name,
-            Key=object_key,
+            Key=filename,
         )
 
         response_metadata = response["ResponseMetadata"]
@@ -45,7 +46,7 @@ def dump_data(table_name, timestamp, csv_data, bucket_name):
         """
         )
 
-        return "Data dumped successfully!"
+        return filename
 
     except Exception as e:
         raise e
