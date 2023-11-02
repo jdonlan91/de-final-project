@@ -1,9 +1,28 @@
 from dotenv import load_dotenv
 from src.ingestor.utils.fetch_new_data import fetch_new_data
 import pytest
+from unittest.mock import patch
 from os import environ
 from datetime import datetime
 from pg8000.exceptions import DatabaseError
+
+
+@pytest.fixture
+def test_db_credentials():
+    mock_env = {
+        "DB_USERNAME": "test_username",
+        "DB_NAME": "test_name",
+        "DB_HOST": "test_host",
+        "DB_PASSWORD": "test_password",
+    }
+
+    with patch.dict("os.environ", mock_env, clear=True):
+        return {
+            "DB_USERNAME": mock_env["DB_USERNAME"],
+            "DB_NAME": mock_env["DB_NAME"],
+            "DB_HOST": mock_env["DB_HOST"],
+            "DB_PASSWORD": mock_env["DB_PASSWORD"],
+        }
 
 
 @pytest.fixture
@@ -50,13 +69,16 @@ def three_rows_from_staff():
     ]
 
 
-def test_if_no_new_data_returns_empty_list(db_credentials):
-    assert (
-        fetch_new_data(
-            "staff", datetime(2023, 1, 1, 14, 20, 51, 563000), db_credentials
+def test_if_no_new_data_returns_empty_list(test_db_credentials):
+    with patch("src.ingestor.utils.fetch_new_data.create_connection") as mock_create_connection:
+        mock_connection = mock_create_connection.return_value
+        mock_connection.run.return_value = {}
+
+        test_timestamp = datetime(2023, 1, 1, 14, 20, 51, 563000)
+
+        assert (
+            fetch_new_data("staff", test_timestamp, test_db_credentials) == []
         )
-        == []
-    )
 
 
 def test_if_table_contains_new_data_returns_list_of_dictionaries(
@@ -65,6 +87,7 @@ def test_if_table_contains_new_data_returns_list_of_dictionaries(
     test_table_name = "staff"
     test_timestamp = datetime(2021, 1, 1, 14, 20, 51, 563000)
     output = fetch_new_data(test_table_name, test_timestamp, db_credentials)
+
     assert output[:3] == three_rows_from_staff
 
 
@@ -72,6 +95,7 @@ def test_raises_error_if_cannot_connect_to_database(db_credentials):
     db_credentials["DB_PASSWORD"] = "12345"
     test_table_name = "staff"
     test_timestamp = datetime(2021, 1, 1, 14, 20, 51, 563000)
+
     with pytest.raises(DatabaseError):
         fetch_new_data(test_table_name, test_timestamp, db_credentials)
 
@@ -79,5 +103,6 @@ def test_raises_error_if_cannot_connect_to_database(db_credentials):
 def test_raises_error_if_table_does_not_exist(db_credentials):
     test_table_name = "invalid_table_name"
     test_timestamp = datetime(2021, 1, 1, 14, 20, 51, 563000)
+
     with pytest.raises(DatabaseError):
         fetch_new_data(test_table_name, test_timestamp, db_credentials)
