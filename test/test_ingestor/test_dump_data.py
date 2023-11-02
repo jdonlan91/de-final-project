@@ -2,7 +2,7 @@ import os
 import pytest
 import boto3
 from moto import mock_s3
-from src.ingester.utils.dump_data import dump_data
+from src.ingestor.utils.dump_data import dump_data
 
 
 @pytest.fixture(scope="function")
