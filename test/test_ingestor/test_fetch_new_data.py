@@ -1,9 +1,7 @@
 import pytest
 import copy
-from os import environ
 from datetime import datetime
 
-from dotenv import load_dotenv
 from unittest.mock import patch, MagicMock
 from pg8000.exceptions import DatabaseError
 
@@ -110,7 +108,7 @@ class TestFetchNewData:
 
     def test_if_no_new_data_returns_empty_list(self):
         with patch("src.ingestor.utils.fetch_new_data.create_connection") \
-        as mock_create_connection:
+                as mock_create_connection:
             mock_conn = MagicMock()
             mock_create_connection.return_value = mock_conn
 
@@ -122,12 +120,12 @@ class TestFetchNewData:
                 self.test_db_credentials
             )
             assert result == []
-    
+
     def test_returns_list_of_dictionaries_if_new_data_found(self, test_data):
         test_columns, new_staff_data, expected_return_data = test_data
 
         with patch("src.ingestor.utils.fetch_new_data.create_connection") \
-        as mock_create_connection:
+                as mock_create_connection:
             mock_conn = MagicMock()
             mock_create_connection.return_value = mock_conn
 
@@ -143,3 +141,11 @@ class TestFetchNewData:
             )
 
             assert result == expected_return_data
+    
+    def test_raises_an_error(self):
+        with pytest.raises(Exception):
+            fetch_new_data(
+                "staff",
+                self.test_timestamp,
+                self.test_db_credentials
+            )
