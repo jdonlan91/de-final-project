@@ -1,10 +1,10 @@
 from dotenv import load_dotenv
-from src.ingestor.utils.fetch_new_data import fetch_new_data
 import pytest
 from unittest.mock import patch
 from os import environ
 from datetime import datetime
 from pg8000.exceptions import DatabaseError
+from src.ingestor.utils.fetch_new_data import fetch_new_data, convert_lists_to_dictionaries
 
 
 @pytest.fixture(autouse=True)
@@ -74,35 +74,48 @@ def new_staff_data():
     ]
 
 
-def test_if_no_new_data_returns_empty_list(test_db_credentials):
-    with patch("src.ingestor.utils.fetch_new_data.create_connection") as mock_create_connection:
-        mock_connection = mock_create_connection.return_value
-        mock_connection.run.return_value = {}
-
-        result = fetch_new_data("staff", test_timestamp, test_db_credentials)
-        assert result == []
+class TestConvertListsToDictionaries():
+    def test_returns_list_of_dictionaries():
+        pass
 
 
-def test_if_table_contains_new_data_returns_list_of_dictionaries(
-    db_credentials,
-    new_staff_data
-):
-    test_table_name = "staff"
-    test_timestamp = datetime(2021, 1, 1, 14, 20, 51, 563000)
-    output = fetch_new_data(test_table_name, test_timestamp, db_credentials)
-    assert output[:3] == new_staff_data
+class TestFetchNewData:
+    def test_if_no_new_data_returns_empty_list(self, test_db_credentials):
+        with patch("src.ingestor.utils.fetch_new_data.create_connection") as mock_create_connection:
+            mock_connection = mock_create_connection.return_value
+            mock_connection.run.return_value = []
 
+            result = fetch_new_data(
+                "staff", test_timestamp, test_db_credentials)
+            assert result == []
 
-def test_raises_error_if_cannot_connect_to_database(db_credentials):
-    db_credentials["DB_PASSWORD"] = "12345"
-    test_table_name = "staff"
+    def test_if_table_contains_new_data_returns_list_of_dictionaries(
+        self, db_credentials,
+        new_staff_data
+    ):
+        # with patch("src.ingestor.utils.fetch_new_data.create_connection") as mock_create_connection:
+        #     mock_connection = mock_create_connection.return_value
+        #     mock_connection.run.return_value = new_staff_data
 
-    with pytest.raises(DatabaseError):
-        fetch_new_data(test_table_name, test_timestamp, db_credentials)
+        #     result = fetch_new_data("staff", test_timestamp, db_credentials)
+        #     print(f'query result: {result}')
+        #     assert result == new_staff_data
 
+        test_table_name = "staff"
+        test_timestamp = datetime(2021, 1, 1, 14, 20, 51, 563000)
+        output = fetch_new_data(
+            test_table_name, test_timestamp, db_credentials)
+        assert output[:3] == new_staff_data
 
-def test_raises_error_if_table_does_not_exist(db_credentials):
-    test_table_name = "invalid_table_name"
+    def test_raises_error_if_cannot_connect_to_database(self, db_credentials):
+        db_credentials["DB_PASSWORD"] = "12345"
+        test_table_name = "staff"
 
-    with pytest.raises(DatabaseError):
-        fetch_new_data(test_table_name, test_timestamp, db_credentials)
+        with pytest.raises(DatabaseError):
+            fetch_new_data(test_table_name, test_timestamp, db_credentials)
+
+    def test_raises_error_if_table_does_not_exist(self, db_credentials):
+        test_table_name = "invalid_table_name"
+
+        with pytest.raises(DatabaseError):
+            fetch_new_data(test_table_name, test_timestamp, db_credentials)
