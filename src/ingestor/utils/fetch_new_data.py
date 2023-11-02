@@ -11,8 +11,17 @@ def create_connection(db_credentials):
     )
 
 
-def convert_lists_to_dictionaries(list_of_lists):
-    pass
+def convert_lists_to_dictionaries(list_of_lists, column_names):
+    results_list_of_dicts = []
+
+    for row in list_of_lists:
+        row_dictionary = {}
+        for i in range(len(column_names)):
+            if type(row[i]) is datetime:
+                row[i] = row[i].isoformat(sep=" ", timespec="milliseconds")
+            row_dictionary[column_names[i]] = row[i]
+        results_list_of_dicts.append(row_dictionary)
+    return results_list_of_dicts
 
 
 def fetch_new_data(table_name: str, timestamp, db_credentials) -> list[dict]:
@@ -27,7 +36,7 @@ def fetch_new_data(table_name: str, timestamp, db_credentials) -> list[dict]:
             {
                 "DB_USERNAME": ...
                 "DB_NAME": ...
-                "DB_HOST": ...§
+                "DB_HOST": ...
                 "DB_PASSWORD": ...
             }
 
@@ -42,18 +51,9 @@ def fetch_new_data(table_name: str, timestamp, db_credentials) -> list[dict]:
             WHERE last_updated > {literal(timestamp)}
         """
         results_list_of_lists = conn.run(query)
-        print(f'query result: {results_list_of_lists}')
         column_names = [column["name"] for column in conn.columns]
-        results_list_of_dicts = []
 
-        for row in results_list_of_lists:
-            row_dictionary = {}
-            for i in range(len(column_names)):
-                if type(row[i]) is datetime:
-                    row[i] = row[i].isoformat(sep=" ", timespec="milliseconds")
-                row_dictionary[column_names[i]] = row[i]
-            results_list_of_dicts.append(row_dictionary)
-        return results_list_of_dicts
+        return convert_lists_to_dictionaries(results_list_of_lists, column_names)
 
     except Exception as e:
         raise e
