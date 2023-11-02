@@ -141,7 +141,7 @@ class TestFetchNewData:
             )
 
             assert result == expected_return_data
-    
+
     def test_raises_an_error(self):
         with pytest.raises(Exception):
             fetch_new_data(

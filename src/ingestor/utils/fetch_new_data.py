@@ -53,10 +53,10 @@ def fetch_new_data(table_name: str, timestamp, db_credentials) -> list[dict]:
             SELECT * FROM {identifier(table_name)}
             WHERE last_updated > {literal(timestamp)}
         """
-        results_list_of_lists = conn.run(query)
+        query_result = conn.run(query)
         column_names = [column["name"] for column in conn.columns]
 
-        return convert_lists_to_dicts(results_list_of_lists, column_names)
+        return convert_lists_to_dicts(query_result, column_names)
 
     except Exception as e:
         raise e
