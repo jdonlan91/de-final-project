@@ -1,5 +1,6 @@
-from pg8000.native import Connection, identifier, literal
 from datetime import datetime
+
+from pg8000.native import Connection, identifier, literal
 
 
 def create_connection(db_credentials):
@@ -17,6 +18,8 @@ def run_query(db_connection, query):
 
 def convert_lists_to_dicts(list_of_lists, keys):
     list_of_dicts = []
+
+    print(list_of_lists)
 
     for row in list_of_lists:
         row_as_dict = {

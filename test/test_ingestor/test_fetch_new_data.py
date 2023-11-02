@@ -1,10 +1,12 @@
-from dotenv import load_dotenv
 import pytest
 import copy
-from unittest.mock import patch
 from os import environ
 from datetime import datetime
+
+from dotenv import load_dotenv
+from unittest.mock import patch
 from pg8000.exceptions import DatabaseError
+
 from src.ingestor.utils.fetch_new_data import fetch_new_data, convert_lists_to_dicts
 
 
