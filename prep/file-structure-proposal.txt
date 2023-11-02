@@ -10,14 +10,14 @@ de-final-project/
     ├── src/
     │   ├── __init__.py
     │   ├── main.py
-    │   ├── ingester/
+    │   ├── ingestor/
     │   │   ├── utils/
     │   │   │   ├── fetch_data.py
     │   │   │   ├── convert_to_csv.py
     │   │   │   ├── dump_data.py
     │   │   │   ├── requirements.txt
-    │   │   ├── ingester.py
-    │   │   ├── ingester.zip
+    │   │   ├── ingestor.py
+    │   │   ├── ingestor.zip
     │   │   ├── utils.zip
     │   ├── processor/
     │   │   ├── utils/
@@ -35,8 +35,8 @@ de-final-project/
     │   ├── ...
     ├── tests/
     │   ├── __init__.py
-    │   ├── test_ingester/
-    │   │   ├── test_ingester_lambda.py
+    │   ├── test_ingestor/
+    │   │   ├── test_ingestor_lambda.py
     │   │   ├── test_fetch_data.py
     │   │   ├── test_convert_to_csv.py
     │   │   ├── test_dump_data.py
