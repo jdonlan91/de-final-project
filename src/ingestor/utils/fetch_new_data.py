@@ -15,8 +15,6 @@ def create_connection(db_credentials):
 def convert_lists_to_dicts(list_of_lists, keys):
     list_of_dicts = []
 
-    print(list_of_lists)
-
     for row in list_of_lists:
         row_as_dict = {
             keys[i]: cell.isoformat(sep=" ", timespec="milliseconds")
