@@ -72,7 +72,7 @@ class TestConvertListsToDictionaries():
 
 
 class TestFetchNewData:
-    @pytest.fixture()
+    @pytest.fixture(autouse=True)
     def test_db_credentials(self):
         mock_env = {
             "DB_USERNAME": "test_username",
@@ -89,22 +89,24 @@ class TestFetchNewData:
                 "DB_PASSWORD": mock_env["DB_PASSWORD"],
             }
 
-    @pytest.fixture()
+    @pytest.fixture
     def test_timestamp(self):
         return datetime(2023, 1, 1, 14, 20, 51, 563000)
 
     @pytest.fixture
     def test_data(self):
+        test_columns = ["id", "first_name", "last_name"]
         new_staff_data = [
             [1, "Jeremie", "Franey"],
             [2, "Deron", "Beier"],
             [3, "Jeanette", "Erdman"]
-        ],
-        output_staff_data = [
+        ]
+        expected_return_data = [
             {"id": 1, "first_name": "Jeremie", "last_name": "Franey"},
             {"id": 2, "first_name": "Deron", "last_name": "Beier"},
             {"id": 3, "first_name": "Jeanette", "last_name": "Erdman"}
         ]
+        return test_columns, new_staff_data, expected_return_data
 
     def test_if_no_new_data_returns_empty_list(self):
         with patch("src.ingestor.utils.fetch_new_data.create_connection") \
@@ -120,30 +122,24 @@ class TestFetchNewData:
                 self.test_db_credentials
             )
             assert result == []
+    
+    def test_returns_list_of_dictionaries_if_new_data_found(self, test_data):
+        test_columns, new_staff_data, expected_return_data = test_data
 
-    # def test_raises_an_error(self, test_csv):
-    #     with pytest.raises(Exception):
-    #         fetch_new_data(
-    #             "invalid_table_name",
-    #             test_timestamp,
-    #             test_db_credentials
-    #         )
+        with patch("src.ingestor.utils.fetch_new_data.create_connection") \
+        as mock_create_connection:
+            mock_conn = MagicMock()
+            mock_create_connection.return_value = mock_conn
 
-    # def test_raises_error_if_table_does_not_exist(self, test_timestamp, test_db_credentials):
-    #     with patch("src.ingestor.utils.fetch_new_data.create_connection") as mock_create_connection, \
-    #             patch("src.ingestor.utils.fetch_new_data.run_query") as mock_run_query:
+            mock_conn.run.return_value = new_staff_data
+            mock_conn.columns = [
+                {'name': column_name} for column_name in test_columns
+            ]
 
-    #         mock_run_query.return_value = []
+            result = fetch_new_data(
+                "staff",
+                self.test_timestamp,
+                self.test_db_credentials
+            )
 
-    #         with pytest.raises(DatabaseError):
-    #             fetch_new_data(
-    #                 "staff",
-    #                 test_timestamp,
-    #                 test_db_credentials
-    #             )
-
-    # def test_raises_error_if_table_does_not_exist(self, db_credentials):
-    #     invalid_table_name = "invalid_table_name"
-
-    #     with pytest.raises(DatabaseError):
-    #         fetch_new_data(invalid_table_name, test_timestamp, db_credentials)
+            assert result == expected_return_data
