@@ -15,12 +15,12 @@ def run_query(db_connection, query):
     return db_connection.run(query)
 
 
-def convert_lists_to_dicts(list_of_lists, column_names):
+def convert_lists_to_dicts(list_of_lists, keys):
     list_of_dicts = []
 
     for row in list_of_lists:
         row_as_dict = {
-            column_names[i]: cell.isoformat(sep=" ", timespec="milliseconds")
+            keys[i]: cell.isoformat(sep=" ", timespec="milliseconds")
             if type(cell) is datetime
             else cell for i,
             cell in enumerate(row)
