@@ -2,6 +2,19 @@ from pg8000.native import Connection, identifier, literal
 from datetime import datetime
 
 
+def create_connection(db_credentials):
+    return Connection(
+        user=db_credentials["DB_USERNAME"],
+        password=db_credentials["DB_PASSWORD"],
+        host=db_credentials["DB_HOST"],
+        database=db_credentials["DB_NAME"],
+    )
+
+
+def convert_lists_to_dictionaries(list_of_lists):
+    pass
+
+
 def fetch_new_data(table_name: str, timestamp, db_credentials) -> list[dict]:
     """Fetches data more recent than the timestamp from a specified table
     and returns the rows as a list of dictionaries
@@ -14,7 +27,7 @@ def fetch_new_data(table_name: str, timestamp, db_credentials) -> list[dict]:
             {
                 "DB_USERNAME": ...
                 "DB_NAME": ...
-                "DB_HOST": ...
+                "DB_HOST": ...§
                 "DB_PASSWORD": ...
             }
 
@@ -22,18 +35,17 @@ def fetch_new_data(table_name: str, timestamp, db_credentials) -> list[dict]:
         returns <list[dict]> representing the relevant rows of the database
     """
     try:
-        conn = Connection(
-            user=db_credentials["DB_USERNAME"],
-            password=db_credentials["DB_PASSWORD"],
-            host=db_credentials["DB_HOST"],
-            database=db_credentials["DB_NAME"],
-        )
+        conn = create_connection(db_credentials)
 
-        query = f"""SELECT * FROM {identifier(table_name)}
-                        WHERE last_updated > {literal(timestamp)}"""
+        query = f"""
+            SELECT * FROM {identifier(table_name)}
+            WHERE last_updated > {literal(timestamp)}
+        """
         results_list_of_lists = conn.run(query)
+        print(f'query result: {results_list_of_lists}')
         column_names = [column["name"] for column in conn.columns]
         results_list_of_dicts = []
+
         for row in results_list_of_lists:
             row_dictionary = {}
             for i in range(len(column_names)):
