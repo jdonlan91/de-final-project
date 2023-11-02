@@ -12,10 +12,6 @@ def create_connection(db_credentials):
     )
 
 
-def run_query(db_connection, query):
-    return db_connection.run(query)
-
-
 def convert_lists_to_dicts(list_of_lists, keys):
     list_of_dicts = []
 
@@ -59,7 +55,7 @@ def fetch_new_data(table_name: str, timestamp, db_credentials) -> list[dict]:
             SELECT * FROM {identifier(table_name)}
             WHERE last_updated > {literal(timestamp)}
         """
-        results_list_of_lists = run_query(conn, query)
+        results_list_of_lists = conn.run(query)
         column_names = [column["name"] for column in conn.columns]
 
         return convert_lists_to_dicts(results_list_of_lists, column_names)
