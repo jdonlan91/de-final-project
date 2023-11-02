@@ -1,10 +1,11 @@
 from dotenv import load_dotenv
 import pytest
+import copy
 from unittest.mock import patch
 from os import environ
 from datetime import datetime
 from pg8000.exceptions import DatabaseError
-from src.ingestor.utils.fetch_new_data import fetch_new_data, convert_lists_to_dictionaries
+from src.ingestor.utils.fetch_new_data import fetch_new_data, convert_lists_to_dicts
 
 
 @pytest.fixture(autouse=True)
@@ -75,8 +76,50 @@ def new_staff_data():
 
 
 class TestConvertListsToDictionaries():
-    def test_returns_list_of_dictionaries():
-        pass
+    @pytest.fixture
+    def test_lists(self):
+        test_list_of_keys = ["id", "first_name", "last_name"]
+        test_list_of_lists = [
+            [1, "Jeremie", "Franey"],
+            [2, "Deron", "Beier"],
+            [3, "Jeanette", "Erdman"]
+        ]
+        test_list_of_dicts = [
+            {"id": 1, "first_name": "Jeremie", "last_name": "Franey"},
+            {"id": 2, "first_name": "Deron", "last_name": "Beier"},
+            {"id": 3, "first_name": "Jeanette", "last_name": "Erdman"}
+        ]
+        return test_list_of_keys, test_list_of_lists, test_list_of_dicts
+
+    def test_returns_an_empty_list_if_passed_at_least_one_empty_list(self, test_lists):
+        test_list_of_keys = test_lists
+
+        assert convert_lists_to_dicts([], []) == []
+        assert convert_lists_to_dicts([], test_list_of_keys) == []
+
+    def test_returns_list_of_dictionaries(
+        self,
+        test_lists
+    ):
+        test_list_of_keys, test_list_of_lists, test_list_of_dicts = test_lists
+
+        expected = test_list_of_dicts
+        result = convert_lists_to_dicts(test_list_of_lists, test_list_of_keys)
+
+        assert expected == result
+
+    def test_input_data_is_not_mutated(self, test_lists):
+        test_list_of_keys, test_list_of_lists, test_list_of_dicts = test_lists
+
+        test_list_of_keys_original = copy.deepcopy(test_list_of_keys)
+        test_list_of_lists_original = copy.deepcopy(test_list_of_lists)
+
+        expected = test_list_of_dicts
+        result = convert_lists_to_dicts(test_list_of_lists, test_list_of_keys)
+
+        assert test_list_of_keys == test_list_of_keys_original
+        assert test_list_of_lists == test_list_of_lists_original
+        assert expected == result
 
 
 class TestFetchNewData:
@@ -103,9 +146,9 @@ class TestFetchNewData:
 
         test_table_name = "staff"
         test_timestamp = datetime(2021, 1, 1, 14, 20, 51, 563000)
-        output = fetch_new_data(
+        result = fetch_new_data(
             test_table_name, test_timestamp, db_credentials)
-        assert output[:3] == new_staff_data
+        assert result[:3] == new_staff_data
 
     def test_raises_error_if_cannot_connect_to_database(self, db_credentials):
         db_credentials["DB_PASSWORD"] = "12345"
