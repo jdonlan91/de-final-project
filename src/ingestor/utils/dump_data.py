@@ -37,15 +37,6 @@ def dump_data(table_name, timestamp, csv_data, bucket_name):
             Key=filename,
         )
 
-        response_metadata = response["ResponseMetadata"]
-
-        print(
-            f"""
-        HTTP status code: {response_metadata['HTTPStatusCode']}
-        Timestamp: {response_metadata['HTTPHeaders']['last-modified']}
-        """
-        )
-
         return filename
 
     except Exception as e:

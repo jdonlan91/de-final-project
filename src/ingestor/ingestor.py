@@ -3,6 +3,9 @@ from utils.convert_to_csv import convert_to_csv
 from utils.dump_data import dump_data
 from utils.fetch_new_data import fetch_new_data
 import logging
+import boto3
+from botocore.exceptions import ClientError
+import json
 
 logger = logging.getLogger("Ingestor logger")
 logger.setLevel(logging.INFO)
@@ -24,7 +27,7 @@ def lambda_handler(event, context):
     """
 
     try:
-        # get credentials from AWS Secrets Manager
+        
 
         table_names = [
             "sales_order",
@@ -42,6 +45,7 @@ def lambda_handler(event, context):
 
         timestamp = datetime.fromisoformat(event["timestamp"])
         bucket_name = event["bucket_name"]
+        db_credentials = get_db_credentials()
 
         for table_name in table_names:
             new_table_data = fetch_new_data(table_name, timestamp,
@@ -55,7 +59,37 @@ def lambda_handler(event, context):
                 filename = dump_data(table_name, timestamp,
                                      csv_string, bucket_name)
                 logger.info(f"Fetched {len(new_table_data)} rows of new data.")
-                logger.info(f"New file {filename} created in S3 bucket {bucket_name}")
+                logger.info(f"File {filename} added to bucket {bucket_name}")
 
     except Exception as e:
         raise e
+    
+
+def get_db_credentials():
+
+    secret_name = "totesys_db_credentials"
+    region_name = "eu-west-2"
+
+    session = boto3.session.Session()
+    client = session.client(
+        service_name='secretsmanager',
+        region_name=region_name
+    )
+
+    try:
+        get_secret_value_response = client.get_secret_value(
+            SecretId=secret_name
+        )
+    except ClientError as e:
+        raise e
+
+    secret = json.loads(get_secret_value_response['SecretString'])
+    db_credentials = {}
+    db_credentials['DB_HOST'] = secret['host']
+    db_credentials['DB_USERNAME'] = secret['username']
+    db_credentials['DB_PASSWORD'] = secret['password']
+    db_credentials['DB_NAME'] = secret['dbname']
+
+    return db_credentials
+
+lambda_handler(event={"timestamp": "2022-11-02T14:20:00Z", "bucket_name": "ingested-20231101210953905500000003"}, context=None)

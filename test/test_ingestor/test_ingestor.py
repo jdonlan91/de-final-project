@@ -1,0 +1,1 @@
+from src.ingestor.ingestor import lambda_handler
