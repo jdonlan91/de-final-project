@@ -40,14 +40,14 @@ def test_csv():
 
 
 class TestDumpData:
-    def test_returns_a_string(self, test_csv, empty_bucket):
+    def test_returns_the_created_filename(self, test_csv, empty_bucket):
         assert (
             dump_data(
                 "test_table",
                 "31-10-23-152600",
                 test_csv,
                 "test_ingested_bucket"
-            ) == "Data dumped successfully!"
+            ) == "test_table-31-10-23-152600.csv"
         )
 
     def test_puts_csv_file_in_bucket(self, s3, test_csv, empty_bucket):
