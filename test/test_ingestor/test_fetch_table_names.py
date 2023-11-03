@@ -39,24 +39,21 @@ class TestFetchTableNames:
 
     @pytest.fixture()
     def test_data(self):
-        test_table_names = [['department'], ['staff'], ['transaction']]
+        test_query_result = [['department'], ['staff'], ['transaction']]
         expected_return_data = ['department', 'staff', 'transaction']
-        return test_table_names, expected_return_data
+        return test_query_result, expected_return_data
 
     def test_returns_a_list(self, test_data):
-        test_table_names = test_data
+        test_query_result = test_data
 
         with patch("src.ingestor.utils.fetch_table_names.create_connection") \
                 as mock_create_connection:
             mock_conn = MagicMock()
             mock_create_connection.return_value = mock_conn
 
-            mock_conn.run.return_value = test_table_names
+            mock_conn.run.return_value = test_query_result
 
-            result = fetch_table_names(
-                'test_database',
-                self.test_db_credentials
-            )
+            result = fetch_table_names(self.test_db_credentials)
             assert isinstance(result, list)
 
     def test_returns_an_list_if_no_tables_found(self):
@@ -67,31 +64,22 @@ class TestFetchTableNames:
 
             mock_conn.run.return_value = []
 
-            result = fetch_table_names(
-                'test_database',
-                self.test_db_credentials
-            )
+            result = fetch_table_names(self.test_db_credentials)
             assert result == []
 
     def test_returns_a_list_of_table_names(self, test_data):
-        test_table_names, expected_return_data = test_data
+        test_query_result, expected_return_data = test_data
 
         with patch("src.ingestor.utils.fetch_table_names.create_connection") \
                 as mock_create_connection:
             mock_conn = MagicMock()
             mock_create_connection.return_value = mock_conn
 
-            mock_conn.run.return_value = test_table_names
+            mock_conn.run.return_value = test_query_result
 
-            result = fetch_table_names(
-                'test_database',
-                self.test_db_credentials
-            )
+            result = fetch_table_names(self.test_db_credentials)
             assert result == expected_return_data
 
     def test_raises_an_exception(self):
         with pytest.raises(Exception):
-            fetch_table_names(
-                'invalid_database',
-                self.test_db_credentials
-            )
+            fetch_table_names(self.test_db_credentials)
