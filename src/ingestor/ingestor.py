@@ -1,7 +1,7 @@
-from datetime import datetime
-from utils.convert_to_csv import convert_to_csv
-from utils.dump_data import dump_data
-from utils.fetch_new_data import fetch_new_data
+from datetime import datetime, timedelta
+from src.ingestor.utils.convert_to_csv import convert_to_csv
+from src.ingestor.utils.dump_data import dump_data
+from src.ingestor.utils.fetch_new_data import fetch_new_data
 import logging
 import boto3
 from botocore.exceptions import ClientError
@@ -27,8 +27,6 @@ def lambda_handler(event, context):
     """
 
     try:
-        
-
         table_names = [
             "sales_order",
             "design",
@@ -43,13 +41,14 @@ def lambda_handler(event, context):
             "transaction",
         ]
 
-        timestamp = datetime.fromisoformat(event["timestamp"])
+        timestamp = datetime.fromisoformat(
+            event["timestamp"]) - timedelta(minutes=5)
         bucket_name = event["bucket_name"]
         db_credentials = get_db_credentials()
 
         for table_name in table_names:
-            new_table_data = fetch_new_data(table_name, timestamp,
-                                            db_credentials)
+            new_table_data = fetch_new_data(table_name,
+                                            timestamp, db_credentials)
             logger.info(f"Table name: {table_name}.")
             if len(new_table_data) == 0:
                 logger.info("No new data found.")
@@ -63,33 +62,27 @@ def lambda_handler(event, context):
 
     except Exception as e:
         raise e
-    
+
 
 def get_db_credentials():
-
     secret_name = "totesys_db_credentials"
     region_name = "eu-west-2"
 
     session = boto3.session.Session()
-    client = session.client(
-        service_name='secretsmanager',
-        region_name=region_name
-    )
+    client = session.client(service_name="secretsmanager",
+                            region_name=region_name)
 
     try:
         get_secret_value_response = client.get_secret_value(
-            SecretId=secret_name
-        )
+            SecretId=secret_name)
     except ClientError as e:
         raise e
 
-    secret = json.loads(get_secret_value_response['SecretString'])
+    secret = json.loads(get_secret_value_response["SecretString"])
     db_credentials = {}
-    db_credentials['DB_HOST'] = secret['host']
-    db_credentials['DB_USERNAME'] = secret['username']
-    db_credentials['DB_PASSWORD'] = secret['password']
-    db_credentials['DB_NAME'] = secret['dbname']
+    db_credentials["DB_HOST"] = secret["host"]
+    db_credentials["DB_USERNAME"] = secret["username"]
+    db_credentials["DB_PASSWORD"] = secret["password"]
+    db_credentials["DB_NAME"] = secret["dbname"]
 
     return db_credentials
-
-lambda_handler(event={"timestamp": "2022-11-02T14:20:00Z", "bucket_name": "ingested-20231101210953905500000003"}, context=None)

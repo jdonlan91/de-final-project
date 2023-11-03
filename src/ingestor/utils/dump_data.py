@@ -31,7 +31,7 @@ def dump_data(table_name, timestamp, csv_data, bucket_name):
         filename = generate_object_key(table_name, timestamp)
         client = boto3.client("s3")
 
-        response = client.put_object(
+        client.put_object(
             Body=csv_data,
             Bucket=bucket_name,
             Key=filename,
