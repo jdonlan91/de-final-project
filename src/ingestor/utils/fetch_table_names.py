@@ -11,16 +11,22 @@ def create_connection(db_credentials):
     
 
 def fetch_table_names(db_name, db_credentials):
-    """Fetches table names from database for lambda_handler function
+    """Reads and fetches all the table names from a given database, 
+    returning them in a list.
     
     Args:
-        database_name <string> the name of the database to fetch the table names
+        db_name <string> the name of the database to fetch the table names
+        db_credentials <dictionary>: credentials for accessing the database.
+        Credentials needs to be in the following format:
+            {
+                "DB_USERNAME": ...
+                "DB_NAME": ...
+                "DB_HOST": ...
+                "DB_PASSWORD": ...
+            }
     
     Returns:
         <list> a list of table names in the database
-    
-    Reads and fetches all the table names from a given database, 
-    returning them in a list.
     """
     conn = create_connection(db_credentials)
     
