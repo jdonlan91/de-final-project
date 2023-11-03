@@ -1,4 +1,16 @@
-def fetch_table_names():
+from pg8000.native import Connection, identifier, literal
+
+
+def create_connection(db_credentials):
+    return Connection(
+        user=db_credentials["DB_USERNAME"],
+        password=db_credentials["DB_PASSWORD"],
+        host=db_credentials["DB_HOST"],
+        database=db_credentials["DB_NAME"],
+    )
+    
+
+def fetch_table_names(db_name, db_credentials):
     """Fetches table names from database for lambda_handler function
     
     Args:
@@ -10,4 +22,5 @@ def fetch_table_names():
     Reads and fetches all the table names from a given database, 
     returning them in a list.
     """
-    pass
+    conn = create_connection(db_credentials)
+    
