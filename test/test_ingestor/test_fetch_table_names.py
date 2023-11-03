@@ -17,9 +17,9 @@ class TestCreateConnection:
 
         with pytest.raises(InterfaceError):
             create_connection(db_credentials)
-            
 
-class TestFetchTableNames:    
+
+class TestFetchTableNames:
     @pytest.fixture(autouse=True)
     def test_db_credentials(self):
         mock_env = {
@@ -36,23 +36,62 @@ class TestFetchTableNames:
                 "DB_HOST": mock_env["DB_HOST"],
                 "DB_PASSWORD": mock_env["DB_PASSWORD"],
             }
-    
-    def test_returns_a_list(self):
-        result = fetch_table_names('test_database')
-        assert isinstance(result, list)
-        
-    def test_returns_an_empty_list(self):
-        result = fetch_table_names('empty_database')
-        assert result == []
-        
-    def test_returns_a_list_of_table_names(self):
-        result = fetch_table_names('test_database')
-        expected = ['table_one', 'table_two', 'table_three']
-        assert result == expected
-        
+
+    @pytest.fixture()
+    def test_data(self):
+        test_table_names = [['department'], ['staff'], ['transaction']]
+        expected_return_data = ['department', 'staff', 'transaction']
+        return test_table_names, expected_return_data
+
+    def test_returns_a_list(self, test_data):
+        test_table_names = test_data
+
+        with patch("src.ingestor.utils.fetch_table_names.create_connection") \
+                as mock_create_connection:
+            mock_conn = MagicMock()
+            mock_create_connection.return_value = mock_conn
+
+            mock_conn.run.return_value = test_table_names
+
+            result = fetch_table_names(
+                'test_database',
+                self.test_db_credentials
+            )
+            assert isinstance(result, list)
+
+    def test_returns_an_list_if_no_tables_found(self):
+        with patch("src.ingestor.utils.fetch_table_names.create_connection") \
+                as mock_create_connection:
+            mock_conn = MagicMock()
+            mock_create_connection.return_value = mock_conn
+
+            mock_conn.run.return_value = []
+
+            result = fetch_table_names(
+                'test_database',
+                self.test_db_credentials
+            )
+            assert result == []
+
+    def test_returns_a_list_of_table_names(self, test_data):
+        test_table_names, expected_return_data = test_data
+
+        with patch("src.ingestor.utils.fetch_table_names.create_connection") \
+                as mock_create_connection:
+            mock_conn = MagicMock()
+            mock_create_connection.return_value = mock_conn
+
+            mock_conn.run.return_value = test_table_names
+
+            result = fetch_table_names(
+                'test_database',
+                self.test_db_credentials
+            )
+            assert result == expected_return_data
+
     def test_raises_an_exception(self):
-        result = fetch_table_names('invalid_database')
         with pytest.raises(Exception):
-            result
-            
-            
+            fetch_table_names(
+                'invalid_database',
+                self.test_db_credentials
+            )
