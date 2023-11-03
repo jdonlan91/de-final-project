@@ -6,6 +6,7 @@ import logging
 import boto3
 from botocore.exceptions import ClientError
 import json
+from pg8000.exceptions import InterfaceError
 
 logger = logging.getLogger("Ingestor logger")
 logger.setLevel(logging.INFO)
@@ -60,8 +61,13 @@ def lambda_handler(event, context):
                 logger.info(f"Fetched {len(new_table_data)} rows of new data.")
                 logger.info(f"File {filename} added to bucket {bucket_name}")
 
-    except Exception as e:
-        raise e
+    except InterfaceError:
+        logger.error("Error interacting with source database")
+    except ClientError as c:
+        if c.response["Error"]["Code"] == "ResourceNotFoundException":
+            logger.error("Error getting database credentials from Secrets Manager.")
+        elif c.response["Error"]["Code"] == "NoSuchBucket":
+            logger.error("Error writing file to ingested bucket.")
 
 
 def get_db_credentials():
@@ -72,11 +78,9 @@ def get_db_credentials():
     client = session.client(service_name="secretsmanager",
                             region_name=region_name)
 
-    try:
-        get_secret_value_response = client.get_secret_value(
-            SecretId=secret_name)
-    except ClientError as e:
-        raise e
+    get_secret_value_response = client.get_secret_value(
+        SecretId=secret_name)
+
 
     secret = json.loads(get_secret_value_response["SecretString"])
     db_credentials = {}
