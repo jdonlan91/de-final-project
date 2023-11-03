@@ -1,4 +1,4 @@
-from pg8000.native import Connection, identifier, literal
+from pg8000.native import Connection
 
 
 def create_connection(db_credentials):
@@ -15,7 +15,7 @@ def flatten_single_subitem_list(list_of_lists):
 
 
 def fetch_table_names(db_credentials):
-    """Reads and fetches all the table names from a given database, 
+    """Reads and fetches all the table names from a given database,
     returning them in a list.
 
     Args:

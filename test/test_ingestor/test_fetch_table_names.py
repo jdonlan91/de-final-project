@@ -39,9 +39,8 @@ class TestFlattenSingleSubitemList:
         assert isinstance(result, list)
 
         for item in result:
-            print(item)
-            print(isinstance(item, list))
-            assert isinstance(item, list) == False
+            if isinstance(item, list):
+                assert False
 
     def test_returns_an_empty_list_if_passed_an_empty_list(self):
         assert flatten_single_subitem_list([]) == []
@@ -55,7 +54,8 @@ class TestFlattenSingleSubitemList:
     def test_input_data_is_not_mutated(self, test_lists):
         test_2d_list = test_lists
         test_2d_list_original = copy.deepcopy(test_2d_list)
-        result = flatten_single_subitem_list(test_2d_list)
+
+        flatten_single_subitem_list(test_2d_list)
 
         assert test_2d_list == test_2d_list_original
 
