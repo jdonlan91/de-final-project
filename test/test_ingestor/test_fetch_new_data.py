@@ -3,7 +3,7 @@ import copy
 from datetime import datetime
 
 from unittest.mock import patch, MagicMock
-from pg8000.exceptions import DatabaseError
+from pg8000.exceptions import InterfaceError
 
 from src.ingestor.utils.fetch_new_data import (
     create_connection,
@@ -17,11 +17,11 @@ class TestCreateConnection:
         db_credentials = {
             "DB_USERNAME": "invalid_user",
             "DB_PASSWORD": "invalid_password",
-            "DB_HOST": "localhost",
+            "DB_HOST": "invalid_host",
             "DB_NAME": "invalid_db",
         }
 
-        with pytest.raises(DatabaseError):
+        with pytest.raises(InterfaceError):
             create_connection(db_credentials)
 
 
