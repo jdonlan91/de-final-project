@@ -1,9 +1,14 @@
 import pytest
+import copy
 
 from unittest.mock import patch, MagicMock
 from pg8000.exceptions import InterfaceError
 
-from src.ingestor.utils.fetch_table_names import create_connection, fetch_table_names
+from src.ingestor.utils.fetch_table_names import (
+    create_connection,
+    flatten_single_subitem_list,
+    fetch_table_names
+)
 
 
 class TestCreateConnection:
@@ -17,6 +22,42 @@ class TestCreateConnection:
 
         with pytest.raises(InterfaceError):
             create_connection(db_credentials)
+
+
+class TestFlattenSingleSubitemList:
+    @pytest.fixture()
+    def test_lists(self):
+        test_2d_list = [[1], [2], [3]]
+        test_flattened_list = [1, 2, 3]
+
+        return test_2d_list, test_flattened_list
+
+    def test_returns_a_one_dimensional_list(self, test_lists):
+        test_2d_list, test_flattened_list = test_lists
+        result = flatten_single_subitem_list(test_2d_list)
+
+        assert isinstance(result, list)
+
+        for item in result:
+            print(item)
+            print(isinstance(item, list))
+            assert isinstance(item, list) == False
+
+    def test_returns_an_empty_list_if_passed_an_empty_list(self):
+        assert flatten_single_subitem_list([]) == []
+
+    def test_returns_flattened_list(self, test_lists):
+        test_2d_list, test_flattened_list = test_lists
+        result = flatten_single_subitem_list(test_2d_list)
+
+        assert result == test_flattened_list
+
+    def test_input_data_is_not_mutated(self, test_lists):
+        test_2d_list = test_lists
+        test_2d_list_original = copy.deepcopy(test_2d_list)
+        result = flatten_single_subitem_list(test_2d_list)
+
+        assert test_2d_list == test_2d_list_original
 
 
 class TestFetchTableNames:
