@@ -10,27 +10,33 @@ de-final-project/
     ├── src/
     │   ├── __init__.py
     │   ├── main.py
-    │   ├── ingester/
-    │   │   ├── ingester_lambda.py
-    │   │   ├── fetch_data.py
-    │   │   ├── convert_to_csv.py
-    │   │   ├── dump_data.py
+    │   ├── ingestor/
+    │   │   ├── utils/
+    │   │   │   ├── fetch_data.py
+    │   │   │   ├── convert_to_csv.py
+    │   │   │   ├── dump_data.py
+    │   │   │   ├── requirements.txt
+    │   │   ├── ingestor.py
+    │   │   ├── ingestor.zip
+    │   │   ├── utils.zip
     │   ├── processor/
-    │   │   ├── processor_lambda.py
-    │   │   ├── read_data.py
-    │   │   ├── transform_data.py
-    │   │   ├── convert_data_to_parquet.py
-    │   │   ├── dump_parquet.py
-    │   │   ├── ...
+    │   │   ├── utils/
+    │   │   │   ├── read_data.py
+    │   │   │   ├── transform_data.py
+    │   │   │   ├── convert_data_to_parquet.py
+    │   │   │   ├── dump_parquet.py
+    │   │   │   ├── requirements.txt
+    │   │   ├── processor.py
+    │   │   ├── processor.zip
+    │   │   ├── utils.zip
     │   ├── loader/
     │   │   ├── loader_lambda.py
-    │   │   ├── loader_module2.py
-    │   │   ├── ...
+    │   │   ├── loader_lambda.zip
     │   ├── ...
     ├── tests/
     │   ├── __init__.py
-    │   ├── test_ingester/
-    │   │   ├── test_ingester_lambda.py
+    │   ├── test_ingestor/
+    │   │   ├── test_ingestor_lambda.py
     │   │   ├── test_fetch_data.py
     │   │   ├── test_convert_to_csv.py
     │   │   ├── test_dump_data.py
