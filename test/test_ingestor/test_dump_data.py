@@ -1,5 +1,6 @@
 import os
 import pytest
+from datetime import datetime
 
 import boto3
 from moto import mock_s3
@@ -12,8 +13,12 @@ from src.ingestor.utils.dump_data import (
 
 class TestGenerateObjectKey:
     def test_generate_object_key(self):
-        expected = "test_table/31-10-23/31-10-23-152600.csv"
-        result = generate_object_key("test_table", "31-10-23-152600")
+        expected = "test_table/31-10-2023/31-10-2023-152600.csv"
+        result = generate_object_key(
+            "test_table",
+            datetime.strptime("31-10-2023-152600", "%d-%m-%Y-%H%M%S")
+        )
+        print("PRINT STATEMENT", result, expected)
         assert result == expected
 
 
@@ -52,28 +57,28 @@ class TestDumpData:
         assert (
             dump_data(
                 "test_table",
-                "31-10-23-152600",
+                datetime.strptime("31-10-2023-152600", "%d-%m-%Y-%H%M%S"),
                 test_csv,
                 "test_ingested_bucket"
-            ) == "test_table/31-10-23/31-10-23-152600.csv"
+            ) == "test_table/31-10-2023/31-10-2023-152600.csv"
         )
 
     def test_puts_csv_file_in_bucket(self, s3, test_csv, empty_bucket):
         dump_data(
             "test_table",
-            "31-10-23-152600",
+            datetime.strptime("31-10-2023-152600", "%d-%m-%Y-%H%M%S"),
             test_csv,
             "test_ingested_bucket"
         )
         response = s3.list_objects(Bucket="test_ingested_bucket")
         filename = response["Contents"][0]["Key"]
-        assert filename == "test_table/31-10-23/31-10-23-152600.csv"
+        assert filename == "test_table/31-10-2023/31-10-2023-152600.csv"
 
     def test_raises_an_error(self, test_csv):
         with pytest.raises(Exception):
             dump_data(
                 'test_table',
-                '31-10-152600',
+                datetime.strptime("31-10-2023-152600", "%d-%m-%Y-%H%M%S"),
                 test_csv,
                 "invalid-bucket-011123"
             )
