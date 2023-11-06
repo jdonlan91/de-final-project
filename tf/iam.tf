@@ -32,6 +32,23 @@ resource "aws_iam_policy" "s3_processed_write_policy" {
   })
 }
 
+resource "aws_iam_policy" "ingestor_history_logging_policy" {
+  name        = "HistoryLoggingPolicyForIngested"
+  description = "Policy for logging invocation history of Ingestor"
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "logs:PutLogEvents"
+        ],
+        Resource = aws_cloudwatch_log_stream.ingestor_history.arn
+      }
+    ]
+  })
+}
+
 resource "aws_iam_policy" "s3_ingested_read_policy" {
   name        = "S3ReadPolicyForIngested"
   description = "Policy for reading from Ingested Bucket"

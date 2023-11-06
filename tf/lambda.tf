@@ -14,3 +14,9 @@ resource "aws_lambda_layer_version" "ingestor_utils_layer" {
     layer_name = "ingestor_utils_layer"
     source_code_hash = data.archive_file.ingestor_utils.output_base64sha256
 }
+
+
+resource "aws_cloudwatch_log_stream" "ingestor_history" {
+  name           = "ingestor_history"
+  log_group_name = "/aws/lambda/${aws_lambda_function.ingestor.function_name}"
+}
