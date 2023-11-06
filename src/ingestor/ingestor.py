@@ -56,8 +56,8 @@ def lambda_handler(event, context):
                 continue
             else:
                 csv_string = convert_to_csv(new_table_data)
-                filename = dump_data(table_name, timestamp,
-                                     csv_string, bucket_name)
+                filename = dump_data(table_name,
+                                     timestamp, csv_string, bucket_name)
                 logger.info(f"Fetched {len(new_table_data)} rows of new data.")
                 logger.info(f"File {filename} added to bucket {bucket_name}")
 
@@ -65,9 +65,18 @@ def lambda_handler(event, context):
         logger.error("Error interacting with source database")
     except ClientError as c:
         if c.response["Error"]["Code"] == "ResourceNotFoundException":
-            logger.error("Error getting database credentials from Secrets Manager.")
+            logger.error(
+                "Error getting database credentials from Secrets Manager.")
         elif c.response["Error"]["Code"] == "NoSuchBucket":
             logger.error("Error writing file to ingested bucket.")
+        else:
+            logger.error(
+                f"""AWS client error {c.response['Error']['Code']}.
+{c.response['Error']['Message']}."""
+            )
+    except Exception as e:
+        logger.error("Unexpected error occurred.")
+        logger.error(e)
 
 
 def get_db_credentials():
@@ -78,9 +87,7 @@ def get_db_credentials():
     client = session.client(service_name="secretsmanager",
                             region_name=region_name)
 
-    get_secret_value_response = client.get_secret_value(
-        SecretId=secret_name)
-
+    get_secret_value_response = client.get_secret_value(SecretId=secret_name)
 
     secret = json.loads(get_secret_value_response["SecretString"])
     db_credentials = {}
