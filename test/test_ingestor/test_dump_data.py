@@ -9,12 +9,15 @@ from src.ingestor.utils.dump_data import (
     dump_data
 )
 
+
 class TestGenerateObjectKey:
     def test_generate_object_key(self):
-       expected = "test_table/31-10-23/31-10-23-152600.csv"
-       result = generate_object_key("test_table", "31-10-23-152600")
+        expected = "test_table/31-10-23/31-10-23-152600.csv"
+        result = generate_object_key("test_table", "31-10-23-152600")
+        assert result == expected
 
-class TestDumpData:    
+
+class TestDumpData:
     @pytest.fixture(scope="function")
     def aws_credentials(self):
         """Mocked AWS Credentials for moto."""
@@ -36,15 +39,15 @@ class TestDumpData:
             Bucket="test_ingested_bucket",
             CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
         )
-        
+
     @pytest.fixture
     def test_csv(self):
         return """
-            seq,name/first,name/last,age,street,city,state,zip,dollar,pick,date
-            1,Curtis,Ruiz,54,Relgo Way,Zappeguk,MN,25633,$4978.53,WHITE,10/30/1941
-            2,Jon,Haynes,54,Jozif Terrace,Zegzavid,ND,41182,$754.87,BLUE,06/12/2048
+            seq,name/first,name/last,age,street,city,state,zip,dollar,pick
+            1,Curtis,Ruiz,54,Relgo Way,Zappeguk,MN,25633,$4978.53,WHITE
+            2,Jon,Haynes,54,Jozif Terrace,Zegzavid,ND,41182,$754.87,BLUE
         """
-    
+
     def test_returns_the_created_filename(self, test_csv, empty_bucket):
         assert (
             dump_data(
@@ -59,7 +62,7 @@ class TestDumpData:
         dump_data(
             "test_table",
             "31-10-23-152600",
-            test_csv, 
+            test_csv,
             "test_ingested_bucket"
         )
         response = s3.list_objects(Bucket="test_ingested_bucket")
