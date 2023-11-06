@@ -1,45 +1,46 @@
 import os
 import pytest
+
 import boto3
 from moto import mock_s3
+
 from src.ingestor.utils.dump_data import dump_data
 
 
-@pytest.fixture(scope="function")
-def aws_credentials():
-    """Mocked AWS Credentials for moto."""
-
-    os.environ["AWS_ACCESS_KEY_ID"] = "test"
-    os.environ["AWS_SECRET_ACCESS_KEY"] = "test"
-    os.environ["AWS_SECURITY_TOKEN"] = "test"
-    os.environ["AWS_SESSION_TOKEN"] = "test"
-    os.environ["AWS_DEFAULT_REGION"] = "eu-west-2"
-
-
-@pytest.fixture(scope="function")
-def s3(aws_credentials):
-    with mock_s3():
-        yield boto3.client("s3", region_name="eu-west-2")
-
-
-@pytest.fixture
-def empty_bucket(s3):
-    s3.create_bucket(
-        Bucket="test_ingested_bucket",
-        CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
-    )
-
-
-@pytest.fixture
-def test_csv():
-    return """
-        seq,name/first,name/last,age,street,city,state,zip,dollar,pick,date
-        1,Curtis,Ruiz,54,Relgo Way,Zappeguk,MN,25633,$4978.53,WHITE,10/30/1941
-        2,Jon,Haynes,54,Jozif Terrace,Zegzavid,ND,41182,$754.87,BLUE,06/12/2048
-    """
-
-
 class TestDumpData:
+    
+    @pytest.fixture(scope="function")
+    def aws_credentials(self):
+        """Mocked AWS Credentials for moto."""
+
+        os.environ["AWS_ACCESS_KEY_ID"] = "test"
+        os.environ["AWS_SECRET_ACCESS_KEY"] = "test"
+        os.environ["AWS_SECURITY_TOKEN"] = "test"
+        os.environ["AWS_SESSION_TOKEN"] = "test"
+        os.environ["AWS_DEFAULT_REGION"] = "eu-west-2"
+
+
+    @pytest.fixture(scope="function")
+    def s3(self, aws_credentials):
+        with mock_s3():
+            yield boto3.client("s3", region_name="eu-west-2")
+
+
+    @pytest.fixture
+    def empty_bucket(self, s3):
+        s3.create_bucket(
+            Bucket="test_ingested_bucket",
+            CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
+        )
+        
+    @pytest.fixture
+    def test_csv(self):
+        return """
+            seq,name/first,name/last,age,street,city,state,zip,dollar,pick,date
+            1,Curtis,Ruiz,54,Relgo Way,Zappeguk,MN,25633,$4978.53,WHITE,10/30/1941
+            2,Jon,Haynes,54,Jozif Terrace,Zegzavid,ND,41182,$754.87,BLUE,06/12/2048
+        """
+    
     def test_returns_the_created_filename(self, test_csv, empty_bucket):
         assert (
             dump_data(
