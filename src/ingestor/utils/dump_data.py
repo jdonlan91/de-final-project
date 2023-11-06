@@ -2,7 +2,9 @@ import boto3
 
 
 def generate_object_key(table_name, timestamp):
-    return f"{table_name}-{timestamp}.csv"
+    timestamp_string = timestamp.strftime("%d-%m-%Y-%H%M%S")
+    date = timestamp_string[:10]
+    return f"{table_name}/{date}/{timestamp_string}.csv"
 
 
 def dump_data(table_name, timestamp, csv_data, bucket_name):

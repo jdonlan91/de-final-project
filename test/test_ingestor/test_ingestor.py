@@ -236,8 +236,9 @@ def test_logs_correct_messages_when_each_table_has_new_data(empty_bucket,
                 context=None,
             )
             assert mock_logger.call_count == 33
+            print("PRINT STATEMENT", mock_logger.mock_calls)
             for t in table_names:
-                s = (f"File {t}-2024-11-02 14:15:00+00:00.csv "
+                s = (f"File {t}/02-11-2024/02-11-2024-141500.csv "
                      "added to bucket test_ingested_bucket")
                 mock_logger.assert_any_call(f"Table name: {t}.")
                 mock_logger.assert_any_call("Fetched 1 rows of new data.")
