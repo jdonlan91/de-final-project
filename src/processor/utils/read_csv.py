@@ -5,7 +5,7 @@ def read_csv(file_name, bucket_name):
     """Reads the contents of a csv file in an AWS S3 bucket.
 
     Args:
-        file_name <string> the name of the file. 
+        file_name <string> the name of the file.
         bucket_name <string> the name of the S3 bucket
         containing the file.
 
