@@ -76,3 +76,57 @@ resource "aws_cloudwatch_metric_alarm" "alert_no_such_bucket_error" {
     alarm_description = "Monitors No Such Bucket Error occurences"
     insufficient_data_actions = []
 }
+
+
+
+resource "aws_cloudwatch_log_metric_filter" "client_error" {
+    name = "ClientError"
+    pattern = "AWS client error"
+    log_group_name = "/aws/lambda/ingestor"
+
+    metric_transformation {
+      name = "ClientErrorCount"
+      namespace = "Basalt-Ingestor"
+      value = "1"
+    }
+}
+
+resource "aws_cloudwatch_metric_alarm" "alert_client_error" {
+    alarm_name = "ClientErrorAlarm"
+    comparison_operator = "GreaterThanOrEqualToThreshold"
+    evaluation_periods = 1
+    metric_name = aws_cloudwatch_log_metric_filter.client_error.id
+    namespace = "Basalt-Ingestor"
+    period = 60
+    statistic = "Sum"
+    threshold = 1
+    alarm_description = "Monitors Client Error occurences"
+    insufficient_data_actions = []
+}
+
+
+
+resource "aws_cloudwatch_log_metric_filter" "unexpected_error" {
+    name = "UnexpectedError"
+    pattern = "Unexpected error occurred."
+    log_group_name = "/aws/lambda/ingestor"
+
+    metric_transformation {
+      name = "UnexpectedErrorCount"
+      namespace = "Basalt-Ingestor"
+      value = "1"
+    }
+}
+
+resource "aws_cloudwatch_metric_alarm" "alert_unexpected_error" {
+    alarm_name = "UnexpectedErrorAlarm"
+    comparison_operator = "GreaterThanOrEqualToThreshold"
+    evaluation_periods = 1
+    metric_name = aws_cloudwatch_log_metric_filter.unexpected_error.id
+    namespace = "Basalt-Ingestor"
+    period = 60
+    statistic = "Sum"
+    threshold = 1
+    alarm_description = "Monitors Unexpected Error occurences"
+    insufficient_data_actions = []
+}
