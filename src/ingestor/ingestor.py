@@ -1,12 +1,14 @@
-from datetime import datetime, timedelta
-from src.ingestor.utils.convert_to_csv import convert_to_csv
-from src.ingestor.utils.dump_data import dump_data
-from src.ingestor.utils.fetch_new_data import fetch_new_data
 import logging
+import json
+from datetime import datetime, timedelta
+
 import boto3
 from botocore.exceptions import ClientError
-import json
 from pg8000.exceptions import InterfaceError
+
+from utils.convert_to_csv import convert_to_csv
+from utils.dump_data import dump_data
+from utils.fetch_new_data import fetch_new_data
 
 logger = logging.getLogger("Ingestor logger")
 logger.setLevel(logging.INFO)
