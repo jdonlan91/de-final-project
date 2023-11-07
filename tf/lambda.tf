@@ -22,5 +22,4 @@ resource "aws_lambda_layer_version" "ingestor_utils_layer" {
 resource "aws_lambda_layer_version" "ingestor_pg8000_layer" {
     filename = "${path.module}/../src/ingestor/pg8000.zip"
     layer_name = "ingestor_pg8000_layer"
-    source_code_hash = data.archive_file.pg8000.output_base64sha256
 }
