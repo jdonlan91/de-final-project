@@ -9,7 +9,7 @@ resource "aws_iam_policy" "s3_ingested_write_policy" {
         Action = [
           "s3:PutObject"
         ],
-        Resource = aws_s3_bucket.ingested_bucket.arn
+        Resource = "${aws_s3_bucket.ingested_bucket.arn}/*"
       }
     ]
   })
@@ -26,7 +26,7 @@ resource "aws_iam_policy" "s3_processed_write_policy" {
         Action = [
           "s3:PutObject"
         ],
-        Resource = aws_s3_bucket.processed_bucket.arn
+        Resource = "${aws_s3_bucket.processed_bucket.arn}/*"
       }
     ]
   })
@@ -43,7 +43,7 @@ resource "aws_iam_policy" "s3_ingested_read_policy" {
         Action = [
           "s3:GetObject"
         ],
-        Resource = aws_s3_bucket.ingested_bucket.arn
+        Resource = "${aws_s3_bucket.ingested_bucket.arn}/*"
       }
     ]
   })
@@ -60,11 +60,29 @@ resource "aws_iam_policy" "s3_processed_read_policy" {
         Action = [
           "s3:GetObject"
         ],
-        Resource = aws_s3_bucket.processed_bucket.arn
+        Resource = "${aws_s3_bucket.processed_bucket.arn}/*"
       }
     ]
   })
 }
+
+resource "aws_iam_policy" "secretsmanager_access" {
+  name        = "SecretsManagerAccess"
+  description = "Policy for accessing secretsmanager"
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "secretsmanager:GetSecretValue"
+        ],
+        Resource = "*"
+      }
+    ]
+  })
+}
+
 
 resource "aws_iam_role" "ingestor_lambda_role" {
   name = "IngestorLambdaRole"
@@ -90,6 +108,12 @@ resource "aws_iam_policy_attachment" "ingestor_lambda_s3_policy_attachment" {
   name       = "IngestorLambdaRoleWritePolicyAttachment"
   roles      = [aws_iam_role.ingestor_lambda_role.name]
   policy_arn = aws_iam_policy.s3_ingested_write_policy.arn
+}
+
+resource "aws_iam_policy_attachment" "ingestor_lambda_secretsmanager_access_attachment" {
+  name       = "IngestorLambdaRoleSecretsManagerAccessAttachment"
+  roles      = [aws_iam_role.ingestor_lambda_role.name]
+  policy_arn = aws_iam_policy.secretsmanager_access.arn
 }
 
 resource "aws_iam_role" "processor_lambda_role" {
