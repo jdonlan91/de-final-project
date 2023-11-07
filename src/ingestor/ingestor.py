@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 from src.ingestor.utils.convert_to_csv import convert_to_csv
 from src.ingestor.utils.dump_data import dump_data
 from src.ingestor.utils.fetch_new_data import fetch_new_data
@@ -32,11 +32,15 @@ def lambda_handler(event, context):
         db_credentials = get_db_credentials()
         table_names = fetch_table_names(db_credentials)
 
-        prev_invocation = get_previous_invocation('/aws/lambda/ingestor','ingestor_history')
+        prev_invocation = get_previous_invocation(
+            '/aws/lambda/ingestor', 'ingestor_history')
         this_invocation = datetime.fromisoformat(
             event["timestamp"])
-        bucket_name = event["bucket_name"]        
-        cutoff = datetime.strptime("01-01-2001-000000", "%d-%m-%Y-%H%M%S") if prev_invocation is None else prev_invocation
+        bucket_name = event["bucket_name"]
+        long_time_ago = datetime.strptime(
+            "01-01-2001-000000", "%d-%m-%Y-%H%M%S")
+        cutoff = long_time_ago if prev_invocation is None else prev_invocation
+
         for table_name in table_names:
             new_table_data = fetch_new_data(table_name,
                                             cutoff, db_credentials)
@@ -50,6 +54,9 @@ def lambda_handler(event, context):
                                      this_invocation, csv_string, bucket_name)
                 logger.info(f"Fetched {len(new_table_data)} rows of new data.")
                 logger.info(f"File {filename} added to bucket {bucket_name}")
+
+        log_invocation_time(
+            this_invocation, '/aws/lambda/ingestor', 'ingestor_history')
 
     except InterfaceError:
         logger.error("Error interacting with source database")
@@ -96,15 +103,17 @@ def log_invocation_time(timestamp, log_group, log_stream):
             'timestamp': int(datetime.now().timestamp() * 1000),
             'message': timestamp.strftime("%d-%m-%Y-%H%M%S")
         }
-    ] 
-    response= conn.put_log_events(logGroupName=log_group, logStreamName=log_stream, logEvents=event)
-    
+    ]
+    conn.put_log_events(
+        logGroupName=log_group, logStreamName=log_stream, logEvents=event)
+
+
 def get_previous_invocation(log_group, log_stream):
     conn = boto3.client("logs", region_name="eu-west-2")
-    log_events = conn.get_log_events(logGroupName=log_group, logStreamName=log_stream)['events']
-    
-    if len(log_events)==0:
+    log_events = conn.get_log_events(
+        logGroupName=log_group, logStreamName=log_stream)['events']
+
+    if len(log_events) == 0:
         return None
     else:
         return datetime.strptime(log_events[-1]['message'], "%d-%m-%Y-%H%M%S")
-    
