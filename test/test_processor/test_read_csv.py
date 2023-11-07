@@ -55,6 +55,7 @@ class TestReadCsv:
         result = read_csv(
             "test_folder/test_file.csv",
             "test_ingested_bucket")
+
         assert isinstance(result, list)
 
         for item in result:
@@ -64,7 +65,18 @@ class TestReadCsv:
         result = read_csv(
             "test_folder/test_empty_file.csv",
             "test_ingested_bucket")
+
         assert result == []
 
     def test_returns_contents_of_csv_as_list_of_dictionaries(self):
-        pass
+        expected = [
+            {'id': '1', 'firstname': 'Rosanne', 'lastname': 'Harriman'},
+            {'id': '2', 'firstname': 'Hermione', 'lastname': 'Leler'},
+            {'id': '3', 'firstname': 'Bernardine', 'lastname': 'Cosenza'}
+        ]
+
+        result = read_csv(
+            "test_folder/test_file.csv",
+            "test_ingested_bucket")
+
+        assert result == expected
