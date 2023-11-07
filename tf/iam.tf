@@ -134,7 +134,8 @@ resource "aws_iam_policy_attachment" "ingestor_lambda_logging_policy_attachment"
   name       = "IngestorLambdaRoleLoggingPolicyAttachment"
   roles      = [aws_iam_role.ingestor_lambda_role.name]
   policy_arn = aws_iam_policy.ingestor_history_logging_policy.arn
-  
+}
+
 resource "aws_iam_policy_attachment" "ingestor_lambda_secretsmanager_access_attachment" {
   name       = "IngestorLambdaRoleSecretsManagerAccessAttachment"
   roles      = [aws_iam_role.ingestor_lambda_role.name]
