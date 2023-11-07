@@ -1,12 +1,10 @@
 import os
 import pytest
-from datetime import datetime
 
 import boto3
 from moto import mock_s3
 
 from src.processor.utils.read_csv import read_csv
-from src.ingestor.utils.dump_data import dump_data
 
 
 class TestReadCsv:
