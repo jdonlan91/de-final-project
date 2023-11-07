@@ -11,3 +11,10 @@ data "archive_file" "ingestor_utils" {
     output_path = "${path.module}/../src/ingestor/utils_payload.zip"
 }
 
+
+data "archive_file" "processor_lambda" {
+    type = "zip"
+    source_file = "${path.module}/../src/processor/processor.py"
+    output_path = "${path.module}/../src/processor/processor_payload.zip"
+}
+

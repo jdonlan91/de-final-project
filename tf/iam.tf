@@ -51,6 +51,25 @@ resource "aws_iam_policy" "ingestor_logging_policy" {
   })
 }
 
+
+resource "aws_iam_policy" "s3_ingested_read_policy" {
+  name        = "S3ReadPolicyForIngested"
+  description = "Policy for reading from Ingested Bucket"
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "s3:GetObject"
+        ],
+        Resource = "${aws_s3_bucket.ingested_bucket.arn}/*"
+      }
+    ]
+  })
+}
+
+
 resource "aws_iam_policy" "s3_processed_write_policy" {
   name        = "S3WritePolicyForProcessed"
   description = "Policy for writing to Processed Bucket"
@@ -69,23 +88,25 @@ resource "aws_iam_policy" "s3_processed_write_policy" {
 }
 
 
-
-resource "aws_iam_policy" "s3_ingested_read_policy" {
-  name        = "S3ReadPolicyForIngested"
-  description = "Policy for reading from Ingested Bucket"
+resource "aws_iam_policy" "processor_logging_policy" {
+  name        = "LoggingPolicyForProcessor"
+  description = "Policy for logging behaviour of Processor"
   policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
       {
         Effect = "Allow",
         Action = [
-          "s3:GetObject"
+          "logs:PutLogEvents",
+          "logs:CreateLogStream",
         ],
-        Resource = "${aws_s3_bucket.ingested_bucket.arn}/*"
+        Resource = "arn:aws:logs:eu-west-2:144630460963:log-group:/aws/lambda/processor:*"
       }
     ]
   })
 }
+
+
 
 resource "aws_iam_policy" "s3_processed_read_policy" {
   name        = "S3ReadPolicyForProcessed"
@@ -196,6 +217,12 @@ resource "aws_iam_policy_attachment" "processor_lambda_s3_write_policy_attachmen
   name       = "ProcessorLambdaRoleWritePolicyAttachment"
   roles      = [aws_iam_role.processor_lambda_role.name]
   policy_arn = aws_iam_policy.s3_processed_write_policy.arn
+}
+
+resource "aws_iam_policy_attachment" "processor_lambda_logging_policy_attachment" {
+  name       = "ProcessorLambdaRoleLoggingPolicyAttachment"
+  roles      = [aws_iam_role.processor_lambda_role.name]
+  policy_arn = aws_iam_policy.processor_logging_policy.arn
 }
 
 resource "aws_iam_role" "loader_lambda_role" {
