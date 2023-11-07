@@ -37,7 +37,7 @@ resource "aws_cloudwatch_log_metric_filter" "resource_not_found_error" {
     }
 }
 
-resource "aws_cloudwatch_metric_alarm" "alert_interface_error" {
+resource "aws_cloudwatch_metric_alarm" "alert_resource_not_found_error" {
     alarm_name = "ResourceNotFoundErrorAlarm"
     comparison_operator = "GreaterThanOrEqualToThreshold"
     evaluation_periods = 1
