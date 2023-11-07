@@ -16,7 +16,7 @@ resource "aws_iam_policy" "s3_ingested_write_policy" {
 }
 
 resource "aws_iam_policy" "ingestor_history_logging_policy" {
-  name        = "HistoryLoggingPolicyForIngested"
+  name        = "HistoryLoggingPolicyForIngestor"
   description = "Policy for logging and reading invocation history of Ingestor"
   policy = jsonencode({
     Version = "2012-10-17",
@@ -27,7 +27,25 @@ resource "aws_iam_policy" "ingestor_history_logging_policy" {
           "logs:PutLogEvents",
           "logs:GetLogEvents",
         ],
-        Resource = aws_cloudwatch_log_stream.ingestor_history.arn
+        Resource = "${aws_cloudwatch_log_stream.ingestor_history.arn}"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_policy" "ingestor_logging_policy" {
+  name        = "LoggingPolicyForIngestor"
+  description = "Policy for logging behaviour of Ingestor"
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "logs:PutLogEvents",
+          "logs:CreateLogStream",
+        ],
+        Resource = "arn:aws:logs:eu-west-2:144630460963:log-group:/aws/lambda/ingestor:*"
       }
     ]
   })
@@ -130,10 +148,16 @@ resource "aws_iam_policy_attachment" "ingestor_lambda_s3_policy_attachment" {
   policy_arn = aws_iam_policy.s3_ingested_write_policy.arn
 }
 
+resource "aws_iam_policy_attachment" "ingestor_lambda_history_logging_policy_attachment" {
+  name       = "IngestorLambdaRoleHistoryLoggingPolicyAttachment"
+  roles      = [aws_iam_role.ingestor_lambda_role.name]
+  policy_arn = aws_iam_policy.ingestor_history_logging_policy.arn
+}
+
 resource "aws_iam_policy_attachment" "ingestor_lambda_logging_policy_attachment" {
   name       = "IngestorLambdaRoleLoggingPolicyAttachment"
   roles      = [aws_iam_role.ingestor_lambda_role.name]
-  policy_arn = aws_iam_policy.ingestor_history_logging_policy.arn
+  policy_arn = aws_iam_policy.ingestor_logging_policy.arn
 }
 
 resource "aws_iam_policy_attachment" "ingestor_lambda_secretsmanager_access_attachment" {
