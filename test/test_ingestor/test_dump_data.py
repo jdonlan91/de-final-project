@@ -18,7 +18,6 @@ class TestGenerateObjectKey:
             "test_table",
             datetime.strptime("31-10-2023-152600", "%d-%m-%Y-%H%M%S")
         )
-        print("PRINT STATEMENT", result, expected)
         assert result == expected
 
 
