@@ -19,7 +19,7 @@ class TestTransformStaff():
             "staff_id": "1",
             "first_name": "Jeremie",
             "last_name": "Franey",
-            "deparment_name": "Purchasing",
+            "department_name": "Purchasing",
             "location": "Manchester",
             "email_address": "jeremie.franey@terrifictotes.com",
         }]
