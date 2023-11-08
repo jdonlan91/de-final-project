@@ -20,7 +20,7 @@ def dump_data(table_name, timestamp, csv_data, bucket_name):
         bucket_name: name of destination S3 bucket.
 
     Returns:
-        The string "Data dumped successfully!"
+        File name of the dumped file.
 
     Raises:
         ClientError: an error occurred in accessing
