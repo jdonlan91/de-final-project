@@ -3,52 +3,30 @@ import pytest
 from src.processor.utils.transform_data import *
 
 
-# class TestTransformStaff():
-#     @pytest.fixture
-#     def test_staff_data(self):
-#         test_input_staff_data = [{
-#             "staff_id": "1",
-#             "first_name": "Jeremie",
-#             "last_name": "Franey",
-#             "department_id": "2",
-#             "email_address": "jeremie.franey@terrifictotes.com",
-#             "created_at": "2022-11-03 14:20:51.563",
-#             "last_updated": "2022-11-03 14:20:51.563"
-#         }]
-#         test_output_staff_data = [{
-#             "staff_id": "1",
-#             "first_name": "Jeremie",
-#             "last_name": "Franey",
-#             "department_name": "Purchasing",
-#             "location": "Manchester",
-#             "email_address": "jeremie.franey@terrifictotes.com",
-#         }]
+class TestTransformStaff():
+    def test_returns_list_of_dictionaries(self, test_staff_data):
+        test_input_staff_data, test_output_staff_data = test_staff_data
 
-#         return test_input_staff_data, test_output_staff_data
+        result = transform_staff(test_input_staff_data)
 
-#     def test_returns_list_of_dictionaries(self, test_staff_data):
-#         test_input_staff_data, test_output_staff_data = test_staff_data
+        assert isinstance(result, list)
 
-#         result = transform_staff(test_input_staff_data)
+        for item in result:
+            assert isinstance(item, dict)
 
-#         assert isinstance(result, list)
+    def test_returns_empty_list_if_passed_file_with_no_data(self):
+        assert transform_staff([]) == []
 
-#         for item in result:
-#             assert isinstance(item, dict)
+    def test_returns_contents_of_csv_as_list_of_dictionaries(
+        self,
+        test_staff_data
+    ):
+        test_input_staff_data, test_output_staff_data = test_staff_data
 
-#     def test_returns_empty_list_if_passed_file_with_no_data(self):
-#         assert transform_staff([]) == []
+        result = transform_staff(test_input_staff_data)
+        expected = test_output_staff_data
 
-#     def test_returns_contents_of_csv_as_list_of_dictionaries(
-#         self,
-#         test_staff_data
-#     ):
-#         test_input_staff_data, test_output_staff_data = test_staff_data
-
-#         result = transform_staff(test_input_staff_data)
-#         expected = test_output_staff_data
-
-#         assert result == expected
+        assert result == expected
 
 
 class TestTransformSalesOrder():
