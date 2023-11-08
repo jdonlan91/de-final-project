@@ -1,6 +1,8 @@
 import pytest
 
 from src.processor.utils.transform_data import *
+from fixtures.transform_staff_data import test_staff_data
+from fixtures.transform_sales_data import test_sales_data
 
 
 class TestTransformStaff():
