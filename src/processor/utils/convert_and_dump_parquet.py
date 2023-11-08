@@ -5,13 +5,12 @@ import pyarrow.parquet as pq
 from io import BytesIO
 
 
-def generate_object_key(table_name, timestamp):
-    timestamp_string = timestamp.strftime("%d-%m-%Y-%H%M%S")
-    date = timestamp_string[:10]
-    return f"{table_name}/{date}/{timestamp_string}.parquet"
+def generate_object_key(filename):
+    extracted_name = filename[:-3]
+    return f"{extracted_name}parquet"
 
 
-def convert_and_dump_parquet(table_name, timestamp,
+def convert_and_dump_parquet(filename,
                              transformed_data, bucket_name):
     """Converts list of dictionaries to pyarrow table
     and dump the parquet file into the processed bucket.
@@ -33,7 +32,7 @@ def convert_and_dump_parquet(table_name, timestamp,
         Exception.
     """
     try:
-        file_name = generate_object_key(table_name, timestamp)
+        new_file_name = generate_object_key(filename)
         client = boto3.client("s3")
 
         df = pd.DataFrame(transformed_data)
@@ -45,9 +44,9 @@ def convert_and_dump_parquet(table_name, timestamp,
         client.put_object(
             Body=stream.getvalue(),
             Bucket=bucket_name,
-            Key=file_name)
+            Key=new_file_name)
 
-        return file_name
+        return new_file_name
 
     except Exception as e:
         raise e

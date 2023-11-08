@@ -13,8 +13,7 @@ class TestGenerateObjectKey:
     def test_generate_object_key(self):
         expected = "test_table/31-10-2023/31-10-2023-152600.parquet"
         result = generate_object_key(
-            "test_table",
-            datetime.strptime("31-10-2023-152600", "%d-%m-%Y-%H%M%S")
+            "test_table/31-10-2023/31-10-2023-152600.csv"
         )
         assert result == expected
 
@@ -48,8 +47,7 @@ class TestDumpParquet:
 
     def test_puts_parquet_file_in_bucket(self, s3, test_data, empty_bucket):
         convert_and_dump_parquet(
-            "test_table",
-            datetime.strptime("31-10-2023-152600", "%d-%m-%Y-%H%M%S"),
+            "test_table/31-10-2023/31-10-2023-152600.csv",
             test_data,
             "test_processed_bucket"
         )
@@ -59,8 +57,7 @@ class TestDumpParquet:
 
     def test_returns_the_created_file_name(self, test_data, empty_bucket):
         assert convert_and_dump_parquet(
-            "test_table",
-            datetime.strptime("31-10-2023-152600", "%d-%m-%Y-%H%M%S"),
+            "test_table/31-10-2023/31-10-2023-152600.csv",
             test_data,
             "test_processed_bucket"
         ) == "test_table/31-10-2023/31-10-2023-152600.parquet"
@@ -68,7 +65,6 @@ class TestDumpParquet:
     def test_raises_an_error(self, test_data):
         with pytest.raises(Exception):
             convert_and_dump_parquet(
-                "test_table",
-                datetime.strptime("31-10-2023-152600", "%d-%m-%Y-%H%M%S"),
+                "test_table/31-10-2023/31-10-2023-152600.csv",
                 test_data,
                 "invalid_bucket")
