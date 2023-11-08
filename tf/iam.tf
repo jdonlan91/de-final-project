@@ -98,6 +98,7 @@ resource "aws_iam_policy" "processor_logging_policy" {
         Effect = "Allow",
         Action = [
           "logs:PutLogEvents",
+          "logs:CreateLogGroup",
           "logs:CreateLogStream",
         ],
         Resource = "arn:aws:logs:eu-west-2:144630460963:log-group:/aws/lambda/processor:*"
