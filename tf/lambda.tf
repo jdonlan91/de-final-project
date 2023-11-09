@@ -38,6 +38,12 @@ resource "aws_lambda_function" "processor" {
     source_code_hash = data.archive_file.processor_lambda.output_base64sha256
     runtime = "python3.11"
     timeout = 300
+
+    environment {
+      variables = {
+        PROCESSED_BUCKET_NAME = aws_s3_bucket.processed_bucket.id
+      }
+    }
 }
 
 

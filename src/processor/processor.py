@@ -1,4 +1,5 @@
 import logging
+import os
 
 from botocore.exceptions import ClientError
 from pg8000.exceptions import InterfaceError
@@ -33,14 +34,16 @@ def lambda_handler(event, context):
     """
     try:
         filename = event["Records"][0]["s3"]["object"]["key"]
-        bucket_name = "processed-20231103142232905400000002"
+        read_bucket_name = event["Records"][0]["s3"]["bucket"]["name"]
+        dump_bucket_name = os.environ["PROCESSED_BUCKET_NAME"]
 
-        data_to_transform = read_csv(filename, bucket_name)
-        transformed_data = transform_data(data_to_transform)
+        data_to_transform = read_csv(filename, read_bucket_name)
+        transformed_data = transform_data(filename, data_to_transform)
         new_filename = convert_and_dump_parquet(filename,
-                                                transformed_data, bucket_name)
+                                                transformed_data,
+                                                dump_bucket_name)
 
-        logger.info(f"File {new_filename} added to bucket {bucket_name}")
+        logger.info(f"File {new_filename} added to bucket {dump_bucket_name}")
 
     except InterfaceError:
         logger.error("Error interacting with database.")

@@ -1,3 +1,4 @@
+import os
 import pytest
 from unittest.mock import patch
 
@@ -17,34 +18,53 @@ def test_data():
     ]
 
 
+@pytest.fixture
+def test_event():
+    return {"Records": [
+                {
+                    "s3": {
+                        "object": {"key": "test_path/test_name.csv"},
+                        "bucket": {"name": "test_read_bucket"}}
+                }
+            ]}
+
+
+@pytest.fixture(scope="function", autouse=True)
+def dump_bucket_name():
+    """Mocked processed bucket name for dumping data."""
+    os.environ["PROCESSED_BUCKET_NAME"] = "test_dump_bucket"
+
+
 @patch("src.processor.processor.convert_and_dump_parquet")
 @patch("src.processor.processor.transform_data")
 @patch("src.processor.processor.read_csv")
 class TestUtilFunctions:
     def test_lambda_calls_util_functions_with_correct_args(
-        self, mock_read, mock_transform, mock_convert_and_dump, test_data
+        self,
+        mock_read,
+        mock_transform,
+        mock_convert_and_dump,
+        test_data,
+        test_event
     ):
-        bucket_name = "processed-20231103142232905400000002"
 
         mock_read.return_value = test_data
         mock_transform.return_value = test_data
 
-        lambda_handler(
-            event={"Records":
-                   [{"s3": {"object": {"key": "test_path/test_name.csv"}}}]},
-            context=None,
-        )
+        lambda_handler(event=test_event, context=None)
+
         "read_csv is called with filename and bucket name"
         mock_read.assert_called_once_with("test_path/test_name.csv",
-                                          bucket_name)
+                                          "test_read_bucket")
 
         "transform_data is called with the data read from csv"
-        mock_transform.assert_called_once_with(test_data)
+        mock_transform.assert_called_once_with("test_path/test_name.csv",
+                                               test_data)
 
         """convert_and_dump_parquet is called with filename, transformed_data
          and bucket_name"""
         mock_convert_and_dump.assert_called_once_with(
-            "test_path/test_name.csv", test_data, bucket_name
+            "test_path/test_name.csv", test_data, "test_dump_bucket"
         )
 
 
@@ -58,23 +78,19 @@ class TestLogging:
         mock_transform,
         mock_convert_and_dump,
         mock_logger,
-        test_data
+        test_data,
+        test_event
     ):
         test_filename = "test_path/test_name.parquet"
-        bucket_name = "processed-20231103142232905400000002"
 
         mock_read.return_value = test_data
         mock_transform.return_value = test_data
         mock_convert_and_dump.return_value = test_filename
 
-        lambda_handler(
-            event={"Records":
-                   [{"s3": {"object": {"key": "test_path/test_name.csv"}}}]},
-            context=None,
-        )
+        lambda_handler(event=test_event, context=None)
 
         mock_logger.info.assert_called_once_with(
-            f"File {test_filename} added to bucket {bucket_name}"
+            f"File {test_filename} added to bucket test_dump_bucket"
         )
 
     def test_when_error_with_source_db_logs_correct_error_message(
@@ -83,16 +99,13 @@ class TestLogging:
         mock_transform,
         mock_convert_and_dump,
         mock_logger,
-        test_data
+        test_data,
+        test_event
     ):
         mock_read.return_value = test_data
         mock_transform.side_effect = InterfaceError
 
-        lambda_handler(
-            event={"Records":
-                   [{"s3": {"object": {"key": "test_path/test_name.csv"}}}]},
-            context=None,
-        )
+        lambda_handler(event=test_event, context=None)
 
         mock_logger.error.assert_called_once_with(
             "Error interacting with database.")
@@ -103,7 +116,8 @@ class TestLogging:
         mock_transform,
         mock_convert_and_dump,
         mock_logger,
-        test_data
+        test_data,
+        test_event
     ):
         mock_read.return_value = test_data
         mock_transform.side_effect = ClientError(
@@ -115,11 +129,7 @@ class TestLogging:
             "Operation name",
         )
 
-        lambda_handler(
-            event={"Records":
-                   [{"s3": {"object": {"key": "test_path/test_name.csv"}}}]},
-            context=None,
-        )
+        lambda_handler(event=test_event, context=None)
 
         mock_logger.error.assert_called_once_with(
             "Error getting database credentials from Secrets Manager."
@@ -131,7 +141,8 @@ class TestLogging:
         mock_transform,
         mock_convert_and_dump,
         mock_logger,
-        test_data
+        test_data,
+        test_event
     ):
         mock_read.side_effect = ClientError(
             {
@@ -142,11 +153,7 @@ class TestLogging:
             "Operation name",
         )
 
-        lambda_handler(
-            event={"Records":
-                   [{"s3": {"object": {"key": "test_path/test_name.csv"}}}]},
-            context=None,
-        )
+        lambda_handler(event=test_event, context=None)
 
         mock_logger.error.assert_called_once_with(
             "Error acessing the bucket. NoSuchBucket."
@@ -158,7 +165,8 @@ class TestLogging:
         mock_transform,
         mock_convert_and_dump,
         mock_logger,
-        test_data
+        test_data,
+        test_event
     ):
         mock_read.return_value = test_data
         mock_transform.return_value = test_data
@@ -172,11 +180,7 @@ class TestLogging:
             "Operation name",
         )
 
-        lambda_handler(
-            event={"Records":
-                   [{"s3": {"object": {"key": "test_path/test_name.csv"}}}]},
-            context=None,
-        )
+        lambda_handler(event=test_event, context=None)
 
         mock_logger.error.assert_called_once_with(
             "AWS client error SampleErrorCode.\nExample error message."
@@ -188,16 +192,13 @@ class TestLogging:
         mock_transform,
         mock_convert_and_dump,
         mock_logger,
-        test_data
+        test_data,
+        test_event
     ):
         mock_read.return_value = test_data
         mock_transform.return_value = test_data
         mock_convert_and_dump.side_effect = Exception
 
-        lambda_handler(
-            event={"Records":
-                   [{"s3": {"object": {"key": "test_path/test_name.csv"}}}]},
-            context=None,
-        )
+        lambda_handler(event=test_event, context=None)
 
         mock_logger.error.assert_any_call("Unexpected error occurred.")
