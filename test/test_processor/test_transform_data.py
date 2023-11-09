@@ -29,13 +29,16 @@ from fixtures.transform_address_data import test_address_data  # noqa: F401
 
 class TestTransformData:
     @pytest.fixture
-    def test_file_name(autouse=True):
+    def test_file_name(self):
         return "design/31-10-2023/31-10-2023-152600.csv"
 
-    def test_returns_a_list_of_dictionaries(self, test_design_data):
+    def test_returns_a_list_of_dictionaries(self,
+                                            test_file_name,
+                                            test_design_data  # noqa: F811
+                                            ):
         test_input_design_data, _ = test_design_data
 
-        result = transform_data(self.test_file_name, test_input_design_data)
+        result = transform_data(test_file_name, test_input_design_data)
 
         assert isinstance(result, list)
 
@@ -44,20 +47,24 @@ class TestTransformData:
 
     @patch("src.processor.utils.transform_data.transform_design")
     def test_calls_the_appropriate_transform_data_function(self,
-                                                           mock_transform_design,
-                                                           test_design_data
+                                                           mock_transform_design,  # noqa: E501
+                                                           test_file_name,
+                                                           test_design_data  # noqa: F811,E501
                                                            ):
         test_input_design_data, _ = test_design_data
 
-        transform_data(self.test_file_name, test_input_design_data)
+        transform_data(test_file_name, test_input_design_data)
 
         assert mock_transform_design.call_count == 1
         assert mock_transform_design.called_with(test_input_design_data)
 
-    def test_returns_transformed_data(self, test_design_data):
+    def test_returns_transformed_data(self,
+                                      test_file_name,
+                                      test_design_data  # noqa: F811
+                                      ):
         test_input_design_data, test_output_design_data = test_design_data
 
-        result = transform_data(self.test_file_name, test_input_design_data)
+        result = transform_data(test_file_name, test_input_design_data)
 
         assert result == test_output_design_data
 

@@ -1,7 +1,15 @@
 import json
+
 import ccy
 import boto3
 from pg8000.native import Connection, identifier, literal
+
+
+def transform_data(file_name, data):
+    transform_to_apply = "transform_" + file_name.split('/')[0]
+    transformed_data = globals()[transform_to_apply](data)
+
+    return transformed_data
 
 
 def get_db_credentials():
@@ -216,7 +224,3 @@ def transform_address(data):
 
 # def transform_transaction():
 #     pass
-
-
-def transform_data(file_name, data):
-    pass
