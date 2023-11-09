@@ -1,12 +1,28 @@
 import pytest
 
+from unittest.mock import patch
+
 from src.processor.utils.transform_data import *
 from fixtures.transform_staff_data import test_staff_data
 from fixtures.transform_sales_data import test_sales_data
 
 
 class TestTransformStaff():
-    def test_returns_list_of_dictionaries(self, test_staff_data):
+    @pytest.fixture(autouse=True)
+    def query_database_patch(self):
+        with patch("src.processor.utils.transform_data.query_database") \
+                as mock_query_database:
+            mock_query_database.side_effect = [
+                "Purchasing",
+                "Manchester"
+            ]
+
+            yield mock_query_database
+
+    def test_returns_list_of_dictionaries(
+        self,
+        test_staff_data
+    ):
         test_input_staff_data, test_output_staff_data = test_staff_data
 
         result = transform_staff(test_input_staff_data)
