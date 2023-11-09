@@ -32,12 +32,26 @@ resource "aws_lambda_layer_version" "ingestor_pg8000_layer" {
 resource "aws_lambda_function" "processor" {
     function_name = "processor"
     filename = data.archive_file.processor_lambda.output_path
-    layers = []
+    layers = [aws_lambda_layer_version.processor_utils_layer.arn,
+    "arn:aws:lambda:eu-west-2:336392948345:layer:AWSSDKPandas-Python311:2"]
     role = aws_iam_role.processor_lambda_role.arn
     handler = "processor.lambda_handler"
     source_code_hash = data.archive_file.processor_lambda.output_base64sha256
     runtime = "python3.11"
     timeout = 300
+
+    environment {
+      variables = {
+        PROCESSED_BUCKET_NAME = aws_s3_bucket.processed_bucket.id
+      }
+    }
+}
+
+
+resource "aws_lambda_layer_version" "processor_utils_layer" {
+    filename = data.archive_file.processor_utils.output_path
+    layer_name = "processor_utils_layer"
+    source_code_hash = data.archive_file.processor_utils.output_base64sha256
 }
 
 
