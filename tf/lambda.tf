@@ -28,12 +28,14 @@ resource "aws_lambda_layer_version" "ingestor_pg8000_layer" {
     layer_name = "ingestor_pg8000_layer"
 }
 
-
 resource "aws_lambda_function" "processor" {
     function_name = "processor"
     filename = data.archive_file.processor_lambda.output_path
-    layers = [aws_lambda_layer_version.processor_utils_layer.arn,
-    "arn:aws:lambda:eu-west-2:336392948345:layer:AWSSDKPandas-Python311:2"]
+    layers = [
+        aws_lambda_layer_version.processor_utils_layer.arn,
+        aws_lambda_layer_version.processor_ccy_layer.arn,
+        "arn:aws:lambda:eu-west-2:336392948345:layer:AWSSDKPandas-Python311:2"
+    ]
     role = aws_iam_role.processor_lambda_role.arn
     handler = "processor.lambda_handler"
     source_code_hash = data.archive_file.processor_lambda.output_base64sha256
@@ -54,6 +56,10 @@ resource "aws_lambda_layer_version" "processor_utils_layer" {
     source_code_hash = data.archive_file.processor_utils.output_base64sha256
 }
 
+resource "aws_lambda_layer_version" "processor_ccy_layer" {
+    filename = "${path.module}/../src/processor/ccy.zip"
+    layer_name = "processor_ccy_layer"
+}
 
 resource "aws_lambda_permission" "allow_s3_ingested_to_invoke_processor" {
   action = "lambda:InvokeFunction"
