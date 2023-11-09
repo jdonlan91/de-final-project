@@ -4,9 +4,9 @@ import os
 from botocore.exceptions import ClientError
 from pg8000.exceptions import InterfaceError
 
-from src.processor.utils.read_csv import read_csv
-from src.processor.utils.transform_data import transform_data
-from src.processor.utils.convert_and_dump_parquet import (
+from utils.read_csv import read_csv
+from utils.transform_data import transform_data
+from utils.convert_and_dump_parquet import (
     convert_and_dump_parquet)
 
 

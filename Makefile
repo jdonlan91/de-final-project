@@ -7,6 +7,7 @@ SHELL := /bin/bash
 PROFILE = default
 PIP:=pip
 INGESTOR_UTILS_PATH="$(WD)/src/ingestor"
+PROCESSOR_UTILS_PATH="$(WD)/src/processor"
 
 create-environment:
 	@echo ">>> About to create environment: $(PROJECT_NAME)..."
@@ -52,12 +53,12 @@ run-flake:
 	$(call execute_in_env, flake8  ./src/*/*.py ./test/*/*.py *c/*/utils/*.py)
 
 unit-test:
-	$(call execute_in_env, PYTHONPATH=${PYTHONPATH}:${INGESTOR_UTILS_PATH} pytest -v)
+	$(call execute_in_env, PYTHONPATH=${PYTHONPATH}:${INGESTOR_UTILS_PATH}:${PROCESSOR_UTILS_PATH} pytest -v)
 
 check-coverage:
-	$(call execute_in_env, PYTHONPATH=${PYTHONPATH}:${INGESTOR_UTILS_PATH} coverage run --omit 'venv/*' -m pytest && coverage report -m)
+	$(call execute_in_env, PYTHONPATH=${PYTHONPATH}:${INGESTOR_UTILS_PATH}:${PROCESSOR_UTILS_PATH} coverage run --omit 'venv/*' -m pytest && coverage report -m)
 
 run-checks: security-test run-flake unit-test check-coverage
 
-package-ingestor-utils:
-	./scripts/package-ingestor-utils.sh
+package-utils:
+	./scripts/package-utils.sh
