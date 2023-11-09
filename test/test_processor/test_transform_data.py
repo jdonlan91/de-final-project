@@ -9,7 +9,7 @@ from unittest.mock import patch
 from src.processor.utils.transform_data import (
     get_db_credentials,
     create_connection,
-    # query_database,
+    query_database,
     transform_staff,
     transform_sales_order,
     # transform_data
@@ -17,19 +17,6 @@ from src.processor.utils.transform_data import (
 
 from fixtures.transform_staff_data import test_staff_data  # noqa: F401
 from fixtures.transform_sales_data import test_sales_data  # noqa: F401
-
-
-class TestCreateConnection:
-    def test_create_connection_failure(self):
-        db_credentials = {
-            "DB_USERNAME": "invalid_user",
-            "DB_PASSWORD": "invalid_password",
-            "DB_HOST": "invalid_host",
-            "DB_NAME": "invalid_db",
-        }
-
-        with pytest.raises(InterfaceError):
-            create_connection(db_credentials)
 
 
 class TestGetDbCredentials:
@@ -68,6 +55,66 @@ class TestGetDbCredentials:
             get_db_credentials()
 
 
+class TestCreateConnection:
+    def test_create_connection_failure(self):
+        db_credentials = {
+            "DB_USERNAME": "invalid_user",
+            "DB_PASSWORD": "invalid_password",
+            "DB_HOST": "invalid_host",
+            "DB_NAME": "invalid_db",
+        }
+
+        with pytest.raises(InterfaceError):
+            create_connection(db_credentials)
+
+
+class TestQueryDatabase():
+    @pytest.fixture(autouse=True)
+    def db_credentials_patch(self):
+        with patch("src.processor.utils.transform_data.get_db_credentials") \
+                as mock_db_credentials:
+            mock_db_credentials.return_value = {
+                "DB_USERNAME": "test_username",
+                "DB_NAME": "test_name",
+                "DB_HOST": "test_host",
+                "DB_PASSWORD": "test_password"
+            }
+            yield mock_db_credentials
+
+    @pytest.fixture(autouse=True)
+    def create_connection_patch(self):
+        with patch("src.processor.utils.transform_data.create_connection") \
+                as mock_create_connection:
+            yield mock_create_connection
+
+    @pytest.fixture()
+    def test_params(self):
+        return ["test_table_name",
+                "test_column_name",
+                "test_foreign_key",
+                "test_foreign_key_value"]
+
+    def test_returns_a_string(self, create_connection_patch, test_params):
+        create_connection_patch.return_value.run.return_value = [
+            ["test_result"]
+        ]
+        result = query_database(*test_params)
+
+        assert isinstance(result, str)
+
+    def test_returns_a_single_value(
+        self,
+        create_connection_patch,
+        test_params
+    ):
+        create_connection_patch.return_value.run.return_value = [
+            ["result_one"], ["result_two"], ["result_three"]
+        ]
+        result = query_database(*test_params)
+
+        assert result == "result_one"
+
+
 class TestTransformStaff():
     @pytest.fixture(autouse=True)
     def query_database_patch(self):
@@ -77,7 +124,6 @@ class TestTransformStaff():
                 "Purchasing",
                 "Manchester"
             ]
-
             yield mock_query_database
 
     def test_returns_list_of_dictionaries(self, test_staff_data):  # noqa: F811

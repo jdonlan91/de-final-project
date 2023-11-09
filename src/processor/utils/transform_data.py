@@ -133,14 +133,6 @@ def transform_sales_order(data):
 # def transform_transaction():
 #     pass
 
-transformed_data = transform_staff([{
-    "staff_id": "1",
-    "first_name": "Jeremie",
-    "last_name": "Franey",
-    "department_id": "2",
-    "email_address": "jeremie.franey@terrifictotes.com",
-    "created_at": "2022-11-03 14:20:51.563",
-    "last_updated": "2022-11-03 14:20:51.563"
-}])
 
-print(transformed_data)
+def transform_data(data, file_name):
+    pass
