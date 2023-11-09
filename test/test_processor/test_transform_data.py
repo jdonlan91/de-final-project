@@ -11,14 +11,20 @@ from src.processor.utils.transform_data import (
     create_connection,
     query_database,
     transform_counterparty,
+    transform_currency,
+    transform_design,
     transform_staff,
     transform_sales_order,
+    transform_address
     # transform_data
 )
 
 from fixtures.transform_counterparty_data import test_counterparty_data  # noqa: F401
+from fixtures.transform_currency_data import test_currency_data  # noqa: F401
+from fixtures.transform_design_data import test_design_data  # noqa: F401
 from fixtures.transform_staff_data import test_staff_data  # noqa: F401
 from fixtures.transform_sales_data import test_sales_data  # noqa: F401
+from fixtures.transform_address_data import test_address_data  # noqa: F401
 
 
 class TestGetDbCredentials:
@@ -155,6 +161,54 @@ class TestTransformCounterparty():
         assert result == expected
 
 
+class TestTransformCurrency():
+    def test_returns_list_of_dictionaries(self, test_currency_data):  # noqa: F811
+        test_input_currency_data, test_output_currency_data = test_currency_data
+
+        result = transform_currency(test_input_currency_data)
+
+        assert isinstance(result, list)
+
+        for item in result:
+            assert isinstance(item, dict)
+
+    def test_returns_empty_list_if_passed_file_with_no_data(
+        self,
+        test_currency_data  # noqa: F811
+    ):
+        assert transform_currency([]) == []
+
+    def test_returns_transformed_data(self, test_currency_data):  # noqa: F811
+        test_input_currency_data, test_output_currency_data = test_currency_data
+        result = transform_currency(test_input_currency_data)
+        expected = test_output_currency_data
+        assert result == expected
+
+
+class TestTransformDesign():
+    def test_returns_list_of_dictionaries(self, test_design_data):  # noqa: F811
+        test_input_design_data, test_output_design_data = test_design_data
+
+        result = transform_design(test_input_design_data)
+
+        assert isinstance(result, list)
+
+        for item in result:
+            assert isinstance(item, dict)
+
+    def test_returns_empty_list_if_passed_file_with_no_data(
+        self,
+        test_design_data  # noqa: F811
+    ):
+        assert transform_design([]) == []
+
+    def test_returns_transformed_data(self, test_design_data):  # noqa: F811
+        test_input_design_data, test_output_design_data = test_design_data
+        result = transform_design(test_input_design_data)
+        expected = test_output_design_data
+        assert result == expected
+
+
 class TestTransformStaff():
     @pytest.fixture(autouse=True)
     def query_database_patch(self):
@@ -211,4 +265,28 @@ class TestTransformSalesOrder():
         result = transform_sales_order(test_input_sales_data)
         expected = test_output_sales_data
 
+        assert result == expected
+
+
+class TestTransformAddress():
+    def test_returns_list_of_dictionaries(self, test_address_data):  # noqa: F811
+        test_input_address_data, test_output_location_data = test_address_data
+
+        result = transform_address(test_input_address_data)
+
+        assert isinstance(result, list)
+
+        for item in result:
+            assert isinstance(item, dict)
+
+    def test_returns_empty_list_if_passed_file_with_no_data(
+        self,
+        test_address_data  # noqa: F811
+    ):
+        assert transform_address([]) == []
+
+    def test_returns_transformed_data(self, test_address_data):  # noqa: F811
+        test_input_address_data, test_output_location_data = test_address_data
+        result = transform_address(test_input_address_data)
+        expected = test_output_location_data
         assert result == expected
