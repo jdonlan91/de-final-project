@@ -19,7 +19,9 @@ from src.processor.utils.transform_data import (
     # transform_data
 )
 
-from fixtures.transform_counterparty_data import test_counterparty_data  # noqa: F401
+from fixtures.transform_counterparty_data import (  # noqa: F401
+    test_counterparty_data
+    )
 from fixtures.transform_currency_data import test_currency_data  # noqa: F401
 from fixtures.transform_design_data import test_design_data  # noqa: F401
 from fixtures.transform_staff_data import test_staff_data  # noqa: F401
@@ -139,8 +141,10 @@ class TestTransformCounterparty():
             ]
             yield mock_query_database
 
-    def test_returns_list_of_dictionaries(self, test_counterparty_data):  # noqa: F811
-        test_input_counterparty_data, test_output_counterparty_data = test_counterparty_data
+    def test_returns_list_of_dictionaries(
+            self, test_counterparty_data):  # noqa: F811
+        (test_input_counterparty_data,
+         test_output_counterparty_data) = test_counterparty_data
 
         result = transform_counterparty(test_input_counterparty_data)
 
@@ -152,8 +156,10 @@ class TestTransformCounterparty():
     def test_returns_empty_list_if_passed_file_with_no_data(self):
         assert transform_counterparty([]) == []
 
-    def test_returns_transformed_data(self, test_counterparty_data):  # noqa: F811
-        test_input_counterparty_data, test_output_counterparty_data = test_counterparty_data
+    def test_returns_transformed_data(self,
+                                      test_counterparty_data):  # noqa: F811
+        (test_input_counterparty_data,
+         test_output_counterparty_data) = test_counterparty_data
 
         result = transform_counterparty(test_input_counterparty_data)
         expected = test_output_counterparty_data
@@ -162,8 +168,10 @@ class TestTransformCounterparty():
 
 
 class TestTransformCurrency():
-    def test_returns_list_of_dictionaries(self, test_currency_data):  # noqa: F811
-        test_input_currency_data, test_output_currency_data = test_currency_data
+    def test_returns_list_of_dictionaries(self,
+                                          test_currency_data):  # noqa: F811
+        (test_input_currency_data,
+         test_output_currency_data) = test_currency_data
 
         result = transform_currency(test_input_currency_data)
 
@@ -179,14 +187,16 @@ class TestTransformCurrency():
         assert transform_currency([]) == []
 
     def test_returns_transformed_data(self, test_currency_data):  # noqa: F811
-        test_input_currency_data, test_output_currency_data = test_currency_data
+        (test_input_currency_data,
+         test_output_currency_data) = test_currency_data
         result = transform_currency(test_input_currency_data)
         expected = test_output_currency_data
         assert result == expected
 
 
 class TestTransformDesign():
-    def test_returns_list_of_dictionaries(self, test_design_data):  # noqa: F811
+    def test_returns_list_of_dictionaries(self,
+                                          test_design_data):  # noqa: F811
         test_input_design_data, test_output_design_data = test_design_data
 
         result = transform_design(test_input_design_data)
@@ -269,7 +279,8 @@ class TestTransformSalesOrder():
 
 
 class TestTransformAddress():
-    def test_returns_list_of_dictionaries(self, test_address_data):  # noqa: F811
+    def test_returns_list_of_dictionaries(self,
+                                          test_address_data):  # noqa: F811
         test_input_address_data, test_output_location_data = test_address_data
 
         result = transform_address(test_input_address_data)

@@ -116,8 +116,8 @@ def transform_currency(data):
     return transformed_data
 
 
-def transform_department():
-    pass
+# def transform_department():
+#     pass
 
 
 def transform_design(data):
