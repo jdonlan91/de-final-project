@@ -10,11 +10,13 @@ from src.processor.utils.transform_data import (
     get_db_credentials,
     create_connection,
     query_database,
+    transform_counterparty,
     transform_staff,
     transform_sales_order,
     # transform_data
 )
 
+from fixtures.transform_counterparty_data import test_counterparty_data  # noqa: F401
 from fixtures.transform_staff_data import test_staff_data  # noqa: F401
 from fixtures.transform_sales_data import test_sales_data  # noqa: F401
 
@@ -113,6 +115,44 @@ class TestQueryDatabase():
         result = query_database(*test_params)
 
         assert result == "result_one"
+
+
+class TestTransformCounterparty():
+    @pytest.fixture(autouse=True)
+    def query_database_patch(self):
+        with patch("src.processor.utils.transform_data.query_database") \
+                as mock_query_database:
+            mock_query_database.side_effect = [
+                '605 Haskell Trafficway',
+                'Axel Freeway',
+                "County Somewhere",
+                'East Bobbie',
+                '88253-4257',
+                'Heard Island and McDonald Islands',
+                '9687 937447'
+            ]
+            yield mock_query_database
+
+    def test_returns_list_of_dictionaries(self, test_counterparty_data):  # noqa: F811
+        test_input_counterparty_data, test_output_counterparty_data = test_counterparty_data
+
+        result = transform_counterparty(test_input_counterparty_data)
+
+        assert isinstance(result, list)
+
+        for item in result:
+            assert isinstance(item, dict)
+
+    def test_returns_empty_list_if_passed_file_with_no_data(self):
+        assert transform_counterparty([]) == []
+
+    def test_returns_transformed_data(self, test_counterparty_data):  # noqa: F811
+        test_input_counterparty_data, test_output_counterparty_data = test_counterparty_data
+
+        result = transform_counterparty(test_input_counterparty_data)
+        expected = test_output_counterparty_data
+
+        assert result == expected
 
 
 class TestTransformStaff():

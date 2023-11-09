@@ -220,6 +220,3 @@ def transform_address(data):
 
 def transform_data(file_name, data):
     pass
-
-
-transform_currency()
