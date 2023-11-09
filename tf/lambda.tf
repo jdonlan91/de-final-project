@@ -61,3 +61,15 @@ resource "aws_lambda_permission" "allow_s3_ingested_to_invoke_processor" {
   principal = "s3.amazonaws.com"
   source_arn = aws_s3_bucket.ingested_bucket.arn
 }
+
+
+resource "aws_lambda_function" "loader" {
+    function_name = "loader"
+    filename = data.archive_file.loader_lambda.output_path
+    layers = []
+    role = aws_iam_role.loader_lambda_role.arn
+    handler = "loader.lambda_handler"
+    source_code_hash = data.archive_file.loader_lambda.output_base64sha256
+    runtime = "python3.11"
+    timeout = 300
+}
