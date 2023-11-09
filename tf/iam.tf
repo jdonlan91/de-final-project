@@ -226,6 +226,12 @@ resource "aws_iam_policy_attachment" "processor_lambda_logging_policy_attachment
   policy_arn = aws_iam_policy.processor_logging_policy.arn
 }
 
+resource "aws_iam_policy_attachment" "processor_lambda_secretsmanager_access_attachment" {
+  name       = "ProcessorLambdaRoleSecretsManagerAccessAttachment"
+  roles      = [aws_iam_role.processor_lambda_role.name]
+  policy_arn = aws_iam_policy.secretsmanager_access.arn
+}
+
 resource "aws_iam_role" "loader_lambda_role" {
   name = "LoaderLambdaRole"
   assume_role_policy = jsonencode({
