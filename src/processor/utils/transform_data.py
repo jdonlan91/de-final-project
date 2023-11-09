@@ -1,5 +1,5 @@
 import json
-
+import ccy
 import boto3
 from pg8000.native import Connection, identifier, literal
 
@@ -48,20 +48,90 @@ def query_database(table_name, column_name, foreign_key, foreign_key_value):
     return query_result[0][0]
 
 
-# def transform_counterparty():
-#     pass
+def transform_counterparty(data):
+    transformed_data = [
+        {
+            "counterparty_id": row["counterparty_id"],
+            "counterparty_legal_name": row["counterparty_legal_name"],
+            "counterparty_legal_address_line_1": query_database(
+                table_name="address",
+                column_name="address_line_1",
+                foreign_key="address_id",
+                foreign_key_value=row["legal_address_id"]
+            ),
+            "counterparty_legal_address_line_2": query_database(
+                table_name="address",
+                column_name="address_line_2",
+                foreign_key="address_id",
+                foreign_key_value=row["legal_address_id"]
+            ),
+            "counterparty_legal_district": query_database(
+                table_name="address",
+                column_name="district",
+                foreign_key="address_id",
+                foreign_key_value=row["legal_address_id"]
+            ),
+            "counterparty_legal_city": query_database(
+                table_name="address",
+                column_name="city",
+                foreign_key="address_id",
+                foreign_key_value=row["legal_address_id"]
+            ),
+            "counterparty_legal_postal_code": query_database(
+                table_name="address",
+                column_name="district",
+                foreign_key="postal_code",
+                foreign_key_value=row["legal_address_id"]
+            ),
+            "counterparty_legal_country": query_database(
+                table_name="address",
+                column_name="country",
+                foreign_key="address_id",
+                foreign_key_value=row["legal_address_id"]
+            ),
+            "counterparty_legal_phone_number": query_database(
+                table_name="address",
+                column_name="phone",
+                foreign_key="address_id",
+                foreign_key_value=row["legal_address_id"]
+            )
+        }
+        for row in data
+    ]
+
+    return transformed_data
 
 
-# def transform_currency():
-#     pass
+def transform_currency(data):
+
+    transformed_data = [
+        {
+            "currency_id": row["currency_id"],
+            "currency_code": row["currency_code"],
+            "currency_name": ccy.currency(row["currency_code"]).name
+        }
+        for row in data
+    ]
+
+    return transformed_data
 
 
-# def transform_department():
-#     pass
+def transform_department():
+    pass
 
 
-# def transform_design():
-#     pass
+def transform_design(data):
+    transformed_data = [
+        {
+            "design_id": row["design_id"],
+            "design_name": row["design_name"],
+            "file_location": row["file_location"],
+            "file_name": row["file_name"]
+        }
+        for row in data
+    ]
+
+    return transformed_data
 
 
 def transform_staff(data):
@@ -114,8 +184,22 @@ def transform_sales_order(data):
     return transformed_data
 
 
-# def transform_address():
-#     pass
+def transform_address(data):
+    transformed_data = [
+        {
+            "location_id": row["address_id"],
+            "address_line_1": row["address_line_1"],
+            "address_line_2": row["address_line_2"],
+            "district": row["district"],
+            "city": row["city"],
+            "postal_code": row["postal_code"],
+            "country": row["country"],
+            "phone": row["phone"],
+        }
+        for row in data
+    ]
+
+    return transformed_data
 
 
 # def transform_payment():
@@ -134,5 +218,8 @@ def transform_sales_order(data):
 #     pass
 
 
-def transform_data(data, file_name):
+def transform_data(file_name, data):
     pass
+
+
+transform_currency()
