@@ -58,14 +58,14 @@ def test_conver_list_of_mult_dictionaries_with_mult_columns_to_csv_string():
             "first_name": "Jeanette",
             "last_name": "Erdman",
             "dep_id": 6,
-            "email_address": "jeanette.erdman@terrifictotes.com",
+            "email_address": "j.erdman@terrifictotes.com",
             "created_at": "2022-11-03 14:20:51.563",
         }
     ]
     expected = """staff_id,first_name,last_name,dep_id,email_address,created_at
 1,Jeremie,Franey,2,jeremie.franey@terrifictotes.com,2022-11-03 14:20:51.563
 2,Deron,Beier,6,deron.beier@terrifictotes.com,2022-11-03 14:20:51.563
-3,Jeanette,Erdman,6,jeanette.erdman@terrifictotes.com,2022-11-03 14:20:51.563"""
+3,Jeanette,Erdman,6,j.erdman@terrifictotes.com,2022-11-03 14:20:51.563"""
     assert convert_to_csv(input) == expected
 
 

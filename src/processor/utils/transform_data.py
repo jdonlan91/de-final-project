@@ -184,7 +184,8 @@ def transform_sales_order(data):
             "design_id": int(row["design_id"]),
             "agreed_payment_date": row["agreed_payment_date"],
             "agreed_delivery_date": row["agreed_delivery_date"],
-            "agreed_delivery_location_id": int(row["agreed_delivery_location_id"])
+            "agreed_delivery_location_id": int(
+                row["agreed_delivery_location_id"])
         }
         for row in data
     ]

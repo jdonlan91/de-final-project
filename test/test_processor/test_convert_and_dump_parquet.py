@@ -61,7 +61,6 @@ class TestDumpParquet:
             "test_processed_bucket"
         ) == "test_table/31-10-2023/31-10-2023-152600.parquet"
 
-
     def test_raises_an_error(self, test_data):
         with pytest.raises(Exception):
             convert_and_dump_parquet(
