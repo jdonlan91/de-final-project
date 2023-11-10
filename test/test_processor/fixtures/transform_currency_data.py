@@ -13,7 +13,7 @@ def test_currency_data():
     ]
     test_output_currency_data = [
         {
-            "currency_id": '1',
+            "currency_id": 1,
             "currency_code": 'GBP',
             "currency_name": "British Pound"
         }

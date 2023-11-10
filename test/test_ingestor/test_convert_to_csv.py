@@ -20,7 +20,7 @@ def test_does_not_mutate_passed_list():
 
 def test_converts_list_of_one_dictionary_to_csv_string():
     input = [{"staff_id": 1, "first_name": "Jeremie"}]
-    expected = "staff_id,first_name\n1,Jeremie\n"
+    expected = "staff_id,first_name\n1,Jeremie"
     assert convert_to_csv(input) == expected
 
 
@@ -31,7 +31,7 @@ def test_conver_list_of_mult_dictionaries_with_2_columns_to_csv_string():
         {"staff_id": 3, "first_name": "Steve"},
         {"staff_id": 4, "first_name": "Mary"},
     ]
-    expected = "staff_id,first_name\n1,Jeremie\n2,Peter\n3,Steve\n4,Mary\n"
+    expected = "staff_id,first_name\n1,Jeremie\n2,Peter\n3,Steve\n4,Mary"
     assert convert_to_csv(input) == expected
 
 
@@ -65,8 +65,7 @@ def test_conver_list_of_mult_dictionaries_with_mult_columns_to_csv_string():
     expected = """staff_id,first_name,last_name,dep_id,email_address,created_at
 1,Jeremie,Franey,2,jeremie.franey@terrifictotes.com,2022-11-03 14:20:51.563
 2,Deron,Beier,6,deron.beier@terrifictotes.com,2022-11-03 14:20:51.563
-3,Jeanette,Erdman,6,jeanette.erdman@terrifictotes.com,2022-11-03 14:20:51.563
-"""
+3,Jeanette,Erdman,6,jeanette.erdman@terrifictotes.com,2022-11-03 14:20:51.563"""
     assert convert_to_csv(input) == expected
 
 
