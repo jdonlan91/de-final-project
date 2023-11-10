@@ -60,7 +60,7 @@ class TestFetchNewFile:
     def test_returns_a_list_of_strings(self):
         result = fetch_new_files(
             "test_processed_bucket",
-            "2024-11-02 14:25:52.186"
+            "2024-11-02T14:25:52Z"
         )
         assert isinstance(result, list)
 
@@ -70,7 +70,7 @@ class TestFetchNewFile:
     def test_returns_an_empty_list_if_no_new_files_found(self):
         result = fetch_new_files(
             "test_processed_bucket",
-            "2024-11-02 14:20:52.186"
+            "2024-11-02T14:20:52Z"
         )
         assert result == []
 
@@ -83,7 +83,7 @@ class TestFetchNewFile:
         ]
         result = fetch_new_files(
             "test_processed_bucket",
-            "2024-11-02 14:25:52.186"
+            "2024-11-02T14:25:52Z"
         )
         assert result == expected
 
@@ -94,6 +94,6 @@ class TestFetchNewFile:
         ]
         result = fetch_new_files(
             "test_processed_bucket",
-            "2024-11-02 14:28:52.186"
+            "2024-11-02T14:28:52Z"
         )
         assert result == expected
