@@ -2,7 +2,6 @@ import io
 
 import boto3
 import pandas
-import pyarrow.parquet as pq
 
 
 def read_parquet(file_name, bucket_name):
