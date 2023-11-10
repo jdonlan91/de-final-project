@@ -16,7 +16,7 @@ def test_counterparty_data():
     ]
     test_output_counterparty_data = [
         {
-            "counterparty_id": '1',
+            "counterparty_id": 1,
             "counterparty_legal_name": 'Fahey and Sons',
             "counterparty_legal_address_line_1": '605 Haskell Trafficway',
             "counterparty_legal_address_line_2": 'Axel Freeway',

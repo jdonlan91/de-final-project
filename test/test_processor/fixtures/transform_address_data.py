@@ -14,7 +14,7 @@ def test_address_data():
         "phone": '4949 998070'
     }]
     test_output_location_data = [{
-        "location_id": '10',
+        "location_id": 10,
         "address_line_1": '49967 Kaylah Flat',
         "address_line_2": 'Tremaine Circles',
         "district": 'Bedfordshire',
