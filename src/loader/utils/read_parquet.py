@@ -1,3 +1,7 @@
+import io
+
+import boto3
+import pandas
 import pyarrow.parquet as pq
 
 
@@ -11,4 +15,16 @@ def read_parquet(file_name, bucket_name):
     Returns:
         <str> the contents of the parquet file in csv format.
     """
-    pass
+    buffer = io.BytesIO()
+    s3 = boto3.resource('s3')
+
+    object = s3.Object(bucket_name, file_name)
+    object.download_fileobj(buffer)
+
+    dataframe = pandas.read_parquet(buffer)
+    csv_data = dataframe.to_csv(index=False)
+
+    if csv_data == '\n':
+        return ''
+    else:
+        return csv_data

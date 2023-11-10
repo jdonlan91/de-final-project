@@ -24,7 +24,7 @@ class TestReadParquet:
         with mock_s3():
             yield boto3.client("s3", region_name="eu-west-2")
 
-    @pytest.fixture(autouse=True)
+    @pytest.fixture
     def empty_bucket(self, s3):
         s3.create_bucket(
             Bucket="test_processed_bucket",
@@ -39,23 +39,27 @@ class TestReadParquet:
             {"staff_id": 3, "first_name": "Jeanette", "last_name": "Erdman"},
         ]
 
-        test_parquet_file = convert_and_dump_parquet(  # noqa: F841
-            "test_parquet_file",
-            test_parquet_data,
-            "test_processed_bucket"
+        convert_and_dump_parquet(
+            filename="test_parquet_file.csv",
+            transformed_data=test_parquet_data,
+            bucket_name="test_processed_bucket"
         )
 
-        empty_parquet_file = convert_and_dump_parquet(  # noqa: F841
-            "test_parquet_file", [], "test_processed_bucket"
+        convert_and_dump_parquet(
+            filename="empty_parquet_file.csv",
+            transformed_data=[],
+            bucket_name="test_processed_bucket"
         )
 
     def test_returns_string(self):
-        result = read_parquet("test_parquet_file", "test_processed_bucket")
+        result = read_parquet("test_parquet_file.parquet",
+                              "test_processed_bucket")
 
         assert isinstance(result, str)
 
     def test_returns_empty_str_if_passed_empty_file(self):
-        result = read_parquet("empty_parquet_file", "test_processed_bucket")
+        result = read_parquet("empty_parquet_file.parquet",
+                              "test_processed_bucket")
 
         assert result == ""
 
@@ -66,6 +70,7 @@ class TestReadParquet:
 3,Jeanette,Erdman
 """
 
-        result = read_parquet("test_parquet_file", "test_processed_bucket")
+        result = read_parquet("test_parquet_file.parquet",
+                              "test_processed_bucket")
 
-        assert result == expected.strip()
+        assert result == expected
