@@ -59,7 +59,7 @@ def query_database(table_name, column_name, foreign_key, foreign_key_value):
 def transform_counterparty(data):
     transformed_data = [
         {
-            "counterparty_id": row["counterparty_id"],
+            "counterparty_id": int(row["counterparty_id"]),
             "counterparty_legal_name": row["counterparty_legal_name"],
             "counterparty_legal_address_line_1": query_database(
                 table_name="address",
@@ -114,7 +114,7 @@ def transform_currency(data):
 
     transformed_data = [
         {
-            "currency_id": row["currency_id"],
+            "currency_id": int(row["currency_id"]),
             "currency_code": row["currency_code"],
             "currency_name": ccy.currency(row["currency_code"]).name
         }
@@ -131,7 +131,7 @@ def transform_currency(data):
 def transform_design(data):
     transformed_data = [
         {
-            "design_id": row["design_id"],
+            "design_id": int(row["design_id"]),
             "design_name": row["design_name"],
             "file_location": row["file_location"],
             "file_name": row["file_name"]
@@ -145,7 +145,7 @@ def transform_design(data):
 def transform_staff(data):
     transformed_data = [
         {
-            "staff_id": row["staff_id"],
+            "staff_id": int(row["staff_id"]),
             "first_name": row["first_name"],
             "last_name": row["last_name"],
             "department_name": query_database(
@@ -171,20 +171,21 @@ def transform_staff(data):
 def transform_sales_order(data):
     transformed_data = [
         {
-            "sales_order_id": row["sales_order_id"],
+            "sales_order_id": int(row["sales_order_id"]),
             "created_date": row["created_at"][:10],
             "created_time": row["created_at"][11:],
             "last_updated_date": row["last_updated"][:10],
             "last_updated_time": row["last_updated"][11:],
-            "sales_staff_id": row["staff_id"],
-            "counterparty_id": row["counterparty_id"],
-            "units_sold": row["units_sold"],
-            "unit_price": row["unit_price"],
-            "currency_id": row["currency_id"],
-            "design_id": row["design_id"],
+            "sales_staff_id": int(row["staff_id"]),
+            "counterparty_id": int(row["counterparty_id"]),
+            "units_sold": int(row["units_sold"]),
+            "unit_price": float(row["unit_price"]),
+            "currency_id": int(row["currency_id"]),
+            "design_id": int(row["design_id"]),
             "agreed_payment_date": row["agreed_payment_date"],
             "agreed_delivery_date": row["agreed_delivery_date"],
-            "agreed_delivery_location_id": row["agreed_delivery_location_id"]
+            "agreed_delivery_location_id": int(
+                row["agreed_delivery_location_id"])
         }
         for row in data
     ]
@@ -195,7 +196,7 @@ def transform_sales_order(data):
 def transform_address(data):
     transformed_data = [
         {
-            "location_id": row["address_id"],
+            "location_id": int(row["address_id"]),
             "address_line_1": row["address_line_1"],
             "address_line_2": row["address_line_2"],
             "district": row["district"],

@@ -44,6 +44,7 @@ resource "aws_iam_policy" "ingestor_logging_policy" {
         Action = [
           "logs:PutLogEvents",
           "logs:CreateLogStream",
+          "logs:CreateLogGroup",
         ],
         Resource = "arn:aws:logs:eu-west-2:144630460963:log-group:/aws/lambda/ingestor:*"
       }
@@ -125,6 +126,27 @@ resource "aws_iam_policy" "s3_processed_read_policy" {
     ]
   })
 }
+
+
+resource "aws_iam_policy" "loader_logging_policy" {
+  name        = "LoggingPolicyForLoader"
+  description = "Policy for logging behaviour of Loader"
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "logs:PutLogEvents",
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+        ],
+        Resource = "arn:aws:logs:eu-west-2:144630460963:log-group:/aws/lambda/loader:*"
+      }
+    ]
+  })
+}
+
 
 resource "aws_iam_policy" "secretsmanager_access" {
   name        = "SecretsManagerAccess"
@@ -256,4 +278,18 @@ resource "aws_iam_policy_attachment" "loader_lambda_s3_read_policy_attachment" {
   name       = "LoaderLambdaRoleReadPolicyAttachment"
   roles      = [aws_iam_role.loader_lambda_role.name]
   policy_arn = aws_iam_policy.s3_processed_read_policy.arn
+}
+
+
+resource "aws_iam_policy_attachment" "loader_lambda_secretsmanager_access_attachment" {
+  name       = "LoaderLambdaRoleSecretsManagerAccessAttachment"
+  roles      = [aws_iam_role.loader_lambda_role.name]
+  policy_arn = aws_iam_policy.secretsmanager_access.arn
+}
+
+
+resource "aws_iam_policy_attachment" "loader_lambda_logging_policy_attachment" {
+  name       = "LoaderLambdaRoleLoggingPolicyAttachment"
+  roles      = [aws_iam_role.loader_lambda_role.name]
+  policy_arn = aws_iam_policy.loader_logging_policy.arn
 }

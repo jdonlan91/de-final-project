@@ -15,7 +15,7 @@ def test_design_data():
     ]
     test_output_design_data = [
         {
-            "design_id": "8",
+            "design_id": 8,
             "design_name": "Wooden",
             "file_location": '/usr',
             'file_name': 'wooden-20220717-npgz.json'
