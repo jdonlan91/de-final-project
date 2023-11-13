@@ -1,19 +1,23 @@
-import os
-from src.loader.loader import (lambda_handler,
-                                   get_db_credentials,
-                                   log_invocation_time,
-                                   get_previous_invocation)
-from moto import mock_secretsmanager, mock_s3, mock_logs
-import boto3
-from botocore.exceptions import ClientError
+from datetime import datetime
 import json
+import os
 import pytest
+
+import boto3
+# from botocore.exceptions import ClientError
+from moto import mock_secretsmanager, mock_s3, mock_logs
+# from pg8000.exceptions import InterfaceError
 from unittest.mock import patch
-from datetime import datetime, timezone
-from pg8000.exceptions import InterfaceError
+
+from src.loader.loader import (
+    lambda_handler,
+    get_db_credentials,
+    log_invocation_time,
+    get_previous_invocation
+)
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture(autouse=True)
 def aws_credentials():
     """Mocked AWS Credentials for moto."""
     os.environ["AWS_ACCESS_KEY_ID"] = "testing"
@@ -22,6 +26,201 @@ def aws_credentials():
     os.environ["AWS_SESSION_TOKEN"] = "testing"
     os.environ["AWS_DEFAULT_REGION"] = "eu-west-2"
 
+
+@pytest.fixture
+def test_event():
+    return {
+            "timestamp": "2024-11-02T14:20:00Z",
+            "bucket_name": "test_processed_bucket",
+    }
+
+
+@pytest.fixture
+def test_db_credentials():
+    return {
+        "DB_HOST": "test-host",
+        "DB_PASSWORD": "test_password",
+        "DB_USERNAME": "test-username",
+        "DB_NAME": "test_db_name",
+    }
+
+
+@pytest.fixture
+def s3():
+    with mock_s3():
+        yield boto3.client("s3", region_name="eu-west-2")
+
+
+@pytest.fixture
+def empty_bucket(s3):
+    s3.create_bucket(
+        Bucket="test_processed_bucket",
+        CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
+    )
+
+
+class TestSeedDimDate:
+    @patch("src.loader.loader.log_invocation_time")
+    @patch("src.loader.loader.fetch_new_files")
+    @patch("src.loader.loader.seed_dim_date")
+    @patch("src.loader.loader.get_previous_invocation")
+    @patch("src.loader.loader.get_db_credentials")
+    @mock_secretsmanager
+    def test_seed_dim_date_is_called_on_first_invocation(
+        self,
+        mock_get_db_credentials,
+        mock_prev_invoc,
+        mock_seed,
+        mock_fetch,
+        mock_log,
+        test_event,
+        test_db_credentials,
+        empty_bucket
+    ):
+        mock_get_db_credentials.return_value = test_db_credentials
+        mock_prev_invoc.return_value = None
+        mock_fetch.return_value = []
+        lambda_handler(event=test_event, context=None)
+        mock_seed.assert_called_once_with(test_db_credentials)
+
+    @patch("src.loader.loader.log_invocation_time")
+    @patch("src.loader.loader.populate_schema")
+    @patch("src.loader.loader.read_parquet")
+    @patch("src.loader.loader.fetch_new_files")
+    @patch("src.loader.utils.seed_dim_date")
+    @patch("src.loader.loader.get_previous_invocation")
+    @patch("src.loader.loader.get_db_credentials")
+    @mock_secretsmanager
+    def test_seed_dim_date_is_not_called_if_not_first_invocation(
+            self,
+            mock_get_db_credentials,
+            mock_prev_invoc,
+            mock_seed,
+            mock_fetch,
+            mock_read,
+            mock_populate,
+            mock_log,
+            test_event
+    ):
+        mock_get_db_credentials.return_value = test_db_credentials
+        mock_prev_invoc.return_value = "31-10-2023-152600"
+        mock_fetch.return_value = ["test-file-name"]
+
+        lambda_handler(event=test_event, context=None)
+
+        assert mock_seed.call_count == 0
+
+
+class TestUtilFunctionInvocations:
+    @patch("src.loader.loader.logger")
+    @patch("src.loader.loader.log_invocation_time")
+    @patch("src.loader.loader.populate_schema")
+    @patch("src.loader.loader.read_parquet")
+    @patch("src.loader.loader.fetch_new_files")
+    @patch("src.loader.utils.seed_dim_date")
+    @patch("src.loader.loader.get_previous_invocation")
+    @patch("src.loader.loader.get_db_credentials")
+    @mock_secretsmanager
+    def test_fetch_new_files_called_with_correct_arguments(
+            self,
+            mock_get_db_credentials,
+            mock_prev_invoc,
+            mock_seed,
+            mock_fetch,
+            mock_read,
+            mock_populate,
+            mock_log,
+            mock_logger,
+            test_event
+    ):
+        mock_get_db_credentials.return_value = test_db_credentials
+        mock_prev_invoc.return_value = "31-10-2023-152600"
+        mock_fetch.return_value = []
+
+        lambda_handler(event=test_event, context=None)
+        mock_fetch.assert_any_call(
+            "test_processed_bucket",
+            "31-10-2023-152600"
+        )
+        mock_logger.info.assert_called_once_with("No new files.")
+
+    @patch("src.loader.loader.logger")
+    @patch("src.loader.loader.log_invocation_time")
+    @patch("src.loader.loader.populate_schema")
+    @patch("src.loader.loader.read_parquet")
+    @patch("src.loader.loader.fetch_new_files")
+    @patch("src.loader.utils.seed_dim_date")
+    @patch("src.loader.loader.get_previous_invocation")
+    @patch("src.loader.loader.get_db_credentials")
+    @mock_secretsmanager
+    def test_if_fetch_new_files_returns_empty_list_correct_msg_logged_and_execution_stops(  # noqa: E501
+            self,
+            mock_get_db_credentials,
+            mock_prev_invoc,
+            mock_seed,
+            mock_fetch,
+            mock_read,
+            mock_populate,
+            mock_log,
+            mock_logger,
+            test_event
+    ):
+        mock_get_db_credentials.return_value = test_db_credentials
+        mock_prev_invoc.return_value = "31-10-2023-152600"
+        mock_fetch.return_value = []
+        lambda_handler(event=test_event, context=None)
+        mock_logger.info.assert_called_once_with("No new files.")
+        assert mock_read.call_count == 0
+        assert mock_populate.call_count == 0
+
+    @patch("src.loader.loader.logger")
+    @patch("src.loader.loader.log_invocation_time")
+    @patch("src.loader.loader.populate_schema")
+    @patch("src.loader.loader.read_parquet")
+    @patch("src.loader.loader.fetch_new_files")
+    @patch("src.loader.utils.seed_dim_date")
+    @patch("src.loader.loader.get_previous_invocation")
+    @patch("src.loader.loader.get_db_credentials")
+    @mock_secretsmanager
+    def test_if_fetch_new_files_returns_new_files_read_parquet_and_populate_schema_called_correctly(  # noqa: E501
+            self,
+            mock_get_db_credentials,
+            mock_prev_invoc,
+            mock_seed,
+            mock_fetch,
+            mock_read,
+            mock_populate,
+            mock_log,
+            mock_logger,
+            test_event
+    ):
+        mock_get_db_credentials.return_value = test_db_credentials
+        mock_prev_invoc.return_value = "31-10-2023-152600"
+        mock_fetch.return_value = ["test-file-one", "test-file-two"]
+        mock_read.return_value = "test-csv-string"
+        mock_populate.side_effect = [
+            "File test-file-one loaded.",
+            "File test-file-two loaded."
+        ]
+
+        lambda_handler(event=test_event, context=None)
+        assert mock_read.call_count == 2
+        mock_read.assert_any_call("test-file-one", "test_processed_bucket")
+        mock_read.assert_any_call("test-file-two", "test_processed_bucket")
+        assert mock_populate.call_count == 2
+        mock_populate.assert_any_call(
+            test_db_credentials,
+            "test-file-one",
+            "test-csv-string"
+        )
+        mock_populate.assert_any_call(
+            test_db_credentials,
+            "test-file-two",
+            "test-csv-string"
+        )
+        assert mock_logger.info.call_count == 2
+        mock_logger.info.assert_any_call("File test-file-one loaded.")
+        mock_logger.info.assert_any_call("File test-file-two loaded.")
 
 
 @mock_secretsmanager
@@ -42,7 +241,6 @@ class TestGetDbCredentials:
         db_credentials = get_db_credentials()
         assert db_credentials["DB_HOST"] == "test-host"
 
-
     def test_get_db_credentials_raises_error_when_fails_to_access_secret(self):
         conn = boto3.client("secretsmanager", region_name="eu-west-2")
         conn.create_secret(
@@ -62,7 +260,7 @@ class TestGetDbCredentials:
 
 class TestLogInvocationTime():
     @mock_logs
-    def test_logs_invocation_time(self, aws_credentials):
+    def test_logs_invocation_time(self):
         conn = boto3.client("logs")
         conn.create_log_group(logGroupName="test_log_group")
         conn.create_log_stream(logGroupName="test_log_group",
@@ -78,7 +276,7 @@ class TestLogInvocationTime():
 
 class TestGetPreviousInvocation():
     @mock_logs
-    def test_returns_previous_invocation(self, aws_credentials):
+    def test_returns_previous_invocation(self):
         conn = boto3.client("logs")
         conn.create_log_group(logGroupName="test_log_group")
         conn.create_log_stream(logGroupName="test_log_group",
@@ -93,7 +291,7 @@ class TestGetPreviousInvocation():
             "%d-%m-%Y-%H%M%S") == "31-10-2023-152600"
 
     @mock_logs
-    def test_if_no_previous_invocation_returns_none(self, aws_credentials):
+    def test_if_no_previous_invocation_returns_none(self):
         conn = boto3.client("logs")
         conn.create_log_group(logGroupName="test_log_group")
         conn.create_log_stream(logGroupName="test_log_group",

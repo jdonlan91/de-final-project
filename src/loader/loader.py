@@ -1,7 +1,17 @@
 from datetime import datetime
 import json
+import logging
 
 import boto3
+
+from src.loader.utils.seed_dim_date import seed_dim_date
+from src.loader.utils.fetch_new_files import fetch_new_files
+from src.loader.utils.read_parquet import read_parquet
+from src.loader.utils.populate_schema import populate_schema
+
+
+logger = logging.getLogger("Loader logger")
+logger.setLevel(logging.INFO)
 
 
 def lambda_handler(event, context):
@@ -16,15 +26,38 @@ def lambda_handler(event, context):
     - if previously invoked then call fetch_new_files
         with the timestamp of the previous invocation.
 
-    fetch_new_files gets the names of the files that have been newly
-    added to the processed bucket: needs to return
-    a list of filenames sorted by loading order.
-
     for each new file:
 
     call read_parquet on the file
-    load the data into the appropriate table (populate_schema) in the destination warehouse
+    load the data into the appropriate table (populate_schema)
+    in the destination warehouse
 """
+    db_credentials = get_db_credentials()
+
+    prev_invocation = get_previous_invocation(
+        '/aws/lambda/loader', 'loader_history')
+    this_invocation = datetime.fromisoformat(
+        event["timestamp"])
+    bucket_name = event["bucket_name"]
+    long_time_ago = datetime.strptime(
+        "01-01-2001-000000", "%d-%m-%Y-%H%M%S")
+    cutoff = long_time_ago if prev_invocation is None else prev_invocation
+
+    if cutoff == long_time_ago:
+        seed_dim_date(db_credentials)
+
+    new_file_names = fetch_new_files(bucket_name, cutoff)
+    if new_file_names == []:
+        logger.info("No new files.")
+    else:
+        for file_name in new_file_names:
+            csv_string = read_parquet(file_name, bucket_name)
+            result = populate_schema(db_credentials, file_name, csv_string)
+            logger.info(result)
+
+    log_invocation_time(
+            this_invocation, '/aws/lambda/loader', 'loader_history')
+
 
 def get_db_credentials():
     secret_name = "postgres_db_credentials"
