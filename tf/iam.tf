@@ -148,6 +148,25 @@ resource "aws_iam_policy" "loader_logging_policy" {
 }
 
 
+resource "aws_iam_policy" "loader_history_logging_policy" {
+  name        = "HistoryLoggingPolicyForLoader"
+  description = "Policy for logging and reading invocation history of Loader"
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "logs:PutLogEvents",
+          "logs:GetLogEvents",
+        ],
+        Resource = "${aws_cloudwatch_log_stream.loader_history.arn}"
+      }
+    ]
+  })
+}
+
+
 resource "aws_iam_policy" "secretsmanager_access" {
   name        = "SecretsManagerAccess"
   description = "Policy for accessing secretsmanager"
