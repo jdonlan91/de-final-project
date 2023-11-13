@@ -39,11 +39,13 @@ def lambda_handler(event, context):
 
         data_to_transform = read_csv(filename, read_bucket_name)
         transformed_data = transform_data(filename, data_to_transform)
-        new_filename = convert_and_dump_parquet(filename,
-                                                transformed_data,
-                                                dump_bucket_name)
+        if transformed_data is not None:
+            new_filename = convert_and_dump_parquet(filename,
+                                                    transformed_data,
+                                                    dump_bucket_name)
 
-        logger.info(f"File {new_filename} added to bucket {dump_bucket_name}")
+            logger.info(
+                f"File {new_filename} added to bucket {dump_bucket_name}")
 
     except InterfaceError:
         logger.error("Error interacting with database.")
