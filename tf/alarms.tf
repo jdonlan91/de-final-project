@@ -27,6 +27,7 @@ resource "aws_cloudwatch_metric_alarm" "alert_interface_error" {
     threshold = 1
     alarm_description = "Monitors Interface Error occurences"
     alarm_actions = [aws_sns_topic.error_alerting.arn]
+    treat_missing_data = "notBreaching"
 }
 
 
@@ -54,6 +55,7 @@ resource "aws_cloudwatch_metric_alarm" "alert_resource_not_found_error" {
     threshold = 1
     alarm_description = "Monitors Resource Not Found Error occurences"
     alarm_actions = [aws_sns_topic.error_alerting.arn]
+    treat_missing_data = "notBreaching"
 }
 
 
@@ -81,6 +83,7 @@ resource "aws_cloudwatch_metric_alarm" "alert_no_such_bucket_error" {
     threshold = 1
     alarm_description = "Monitors No Such Bucket Error occurences"
     alarm_actions = [aws_sns_topic.error_alerting.arn]
+    treat_missing_data = "notBreaching"
 }
 
 
@@ -108,6 +111,7 @@ resource "aws_cloudwatch_metric_alarm" "alert_client_error" {
     threshold = 1
     alarm_description = "Monitors Client Error occurences"
     alarm_actions = [aws_sns_topic.error_alerting.arn]
+    treat_missing_data = "notBreaching"
 }
 
 
@@ -135,6 +139,7 @@ resource "aws_cloudwatch_metric_alarm" "alert_unexpected_error" {
     threshold = 1
     alarm_description = "Monitors Unexpected Error occurences"
     alarm_actions = [aws_sns_topic.error_alerting.arn]
+    treat_missing_data = "notBreaching"
 }
 
 resource "aws_cloudwatch_log_metric_filter" "processor_interface_error" {
@@ -160,6 +165,7 @@ resource "aws_cloudwatch_metric_alarm" "alert_processor_interface_error" {
     threshold = 1
     alarm_description = "Monitors Interface Error occurences"
     alarm_actions = [aws_sns_topic.error_alerting.arn]
+    treat_missing_data = "notBreaching"
 }
 
 
@@ -187,6 +193,7 @@ resource "aws_cloudwatch_metric_alarm" "alert_processor_resource_not_found_error
     threshold = 1
     alarm_description = "Monitors Resource Not Found Error occurences"
     alarm_actions = [aws_sns_topic.error_alerting.arn]
+    treat_missing_data = "notBreaching"
 }
 
 
@@ -214,6 +221,7 @@ resource "aws_cloudwatch_metric_alarm" "processor_alert_no_such_bucket_error" {
     threshold = 1
     alarm_description = "Monitors No Such Bucket Error occurences"
     alarm_actions = [aws_sns_topic.error_alerting.arn]
+    treat_missing_data = "notBreaching"
 }
 
 
@@ -241,6 +249,7 @@ resource "aws_cloudwatch_metric_alarm" "processor_alert_client_error" {
     threshold = 1
     alarm_description = "Monitors Client Error occurences"
     alarm_actions = [aws_sns_topic.error_alerting.arn]
+    treat_missing_data = "notBreaching"
 }
 
 
@@ -268,4 +277,5 @@ resource "aws_cloudwatch_metric_alarm" "processor_alert_unexpected_error" {
     threshold = 1
     alarm_description = "Monitors Unexpected Error occurences"
     alarm_actions = [aws_sns_topic.error_alerting.arn]
+    treat_missing_data = "notBreaching"
 }
