@@ -29,35 +29,50 @@ def populate_schema(db_credentials, file_name, csv_string):
         conn = create_connection(db_credentials)
         table_name = file_name.split('/')[0]
 
-        temp_tbl_name = f"temp_{table_name}"
-        column_names = csv_string.split("\n")[0]
-        column_names_array = column_names.split(",")
+        column_names_array = csv_string.split("\n")[0].split(",")
+        column_names = ",".join(list(map(
+            lambda x: identifier(x), column_names_array)))
+        csv_obj = StringIO(csv_string)
 
-        create_temp_tbl = f"""CREATE TEMP TABLE {identifier(temp_tbl_name)}
+        """Logic for the fact tables:"""
+
+        if table_name[:4] == "fact":
+            query = f"""COPY {identifier(table_name)} ({column_names})
+ FROM STDIN WITH CSV HEADER;"""
+            conn.run(query, stream=csv_obj)
+            return f"File {file_name} loaded."
+
+        """Logic for the dim tables:"""
+
+        temp_tbl_name = f"temp_{table_name}"
+
+        create_temp_tb = f"""CREATE TEMP TABLE {identifier(temp_tbl_name)}
  (LIKE {table_name}) ON COMMIT DROP;"""
 
-        populate_temp = f"""COPY {identifier(temp_tbl_name)} ({column_names})
+        populate = f"""COPY {identifier(temp_tbl_name)} ({column_names})
  FROM STDIN WITH CSV HEADER;"""
 
         query = f"""INSERT INTO {identifier(table_name)} ({column_names})
  SELECT * FROM {identifier(temp_tbl_name)}
  ON CONFLICT ({identifier(column_names_array[0])}) DO UPDATE SET"""
 
-        for column in column_names_array:
-            logic = f" {identifier(column)} = EXCLUDED.{identifier(column)},"
-            if column != column_names_array[0]:
+        for col in column_names_array:
+            logic = f" {identifier(col)} = EXCLUDED.{identifier(col)},"
+            if col != column_names_array[0]:
                 query += logic
 
         formatted_query = f"{query[:-1]};"
 
-        csv_obj = StringIO(csv_string)
-
         conn.run("BEGIN;")
-        conn.run(create_temp_tbl)
-        conn.run(populate_temp, stream=csv_obj)
+        conn.run(create_temp_tb)
+        conn.run(populate, stream=csv_obj)
         conn.run(formatted_query)
         conn.run("COMMIT;")
+
         return f"File {file_name} loaded."
 
     except Exception as e:
         raise e
+
+    finally:
+        conn.close()

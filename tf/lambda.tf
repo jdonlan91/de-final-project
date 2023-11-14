@@ -24,7 +24,7 @@ resource "aws_cloudwatch_log_stream" "ingestor_history" {
 }
 
 resource "aws_lambda_layer_version" "pg8000_layer" {
-    filename = "${path.module}/../src/ingestor/pg8000.zip"
+    filename = "${path.module}/../src/pg8000.zip"
     layer_name = "pg8000_layer"
 }
 
@@ -80,6 +80,7 @@ resource "aws_lambda_function" "loader" {
     runtime = "python3.11"
     timeout = 300
 }
+
 
 resource "aws_lambda_layer_version" "loader_utils_layer" {
     filename = data.archive_file.loader_utils.output_path
