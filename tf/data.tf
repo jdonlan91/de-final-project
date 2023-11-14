@@ -38,4 +38,3 @@ data "archive_file" "loader_utils" {
     source_dir = "${path.module}/../temp/loader-utils"
     output_path = "${path.module}/../src/loader/utils_payload.zip"
 }
-

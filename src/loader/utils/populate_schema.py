@@ -73,3 +73,6 @@ def populate_schema(db_credentials, file_name, csv_string):
 
     except Exception as e:
         raise e
+
+    finally:
+        conn.close()
