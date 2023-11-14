@@ -126,6 +126,25 @@ resource "aws_iam_policy" "s3_processed_read_policy" {
     ]
   })
 }
+          
+
+resource "aws_iam_policy" "s3_processed_list_files_policy" {
+  name        = "S3ListFilesPolicyForProcessed"
+  description = "Policy for listing files in Processed Bucket"
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "s3:ListBucket",
+          "s3:ListObjectsV2"
+        ],
+        Resource = "${aws_s3_bucket.processed_bucket.arn}"
+      }
+    ]
+  })
+}
 
 
 resource "aws_iam_policy" "loader_logging_policy" {
@@ -300,6 +319,14 @@ resource "aws_iam_policy_attachment" "loader_lambda_s3_read_policy_attachment" {
 }
 
 
+
+resource "aws_iam_policy_attachment" "loader_lambda_s3_list_files_policy_attachment" {
+  name       = "LoaderLambdaRoleListFilesPolicyAttachment"
+  roles      = [aws_iam_role.loader_lambda_role.name]
+  policy_arn = aws_iam_policy.s3_processed_list_files_policy.arn
+}
+
+
 resource "aws_iam_policy_attachment" "loader_lambda_secretsmanager_access_attachment" {
   name       = "LoaderLambdaRoleSecretsManagerAccessAttachment"
   roles      = [aws_iam_role.loader_lambda_role.name]
@@ -311,4 +338,10 @@ resource "aws_iam_policy_attachment" "loader_lambda_logging_policy_attachment" {
   name       = "LoaderLambdaRoleLoggingPolicyAttachment"
   roles      = [aws_iam_role.loader_lambda_role.name]
   policy_arn = aws_iam_policy.loader_logging_policy.arn
+}
+
+resource "aws_iam_policy_attachment" "loader_lambda_history_logging_policy_attachment" {
+  name       = "LoaderLambdaRoleHistoryLoggingPolicyAttachment"
+  roles      = [aws_iam_role.loader_lambda_role.name]
+  policy_arn = aws_iam_policy.loader_history_logging_policy.arn
 }

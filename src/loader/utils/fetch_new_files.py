@@ -17,7 +17,8 @@ def fetch_new_files(bucket_name, timestamp):
     response = get_all_file_names(bucket_name)
     list_of_parquet_files = []
     for contents in response["Contents"]:
-        if contents["LastModified"] > datetime.fromisoformat(timestamp):
+        last_modified_time = contents["LastModified"].replace(tzinfo=None)
+        if last_modified_time > timestamp:
             list_of_parquet_files.append(contents["Key"])
     sorted_files = sort_new_files(list_of_parquet_files)
     return sorted_files
