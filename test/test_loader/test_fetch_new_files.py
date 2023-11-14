@@ -63,7 +63,8 @@ class TestFetchNewFile:
     def test_returns_a_list_of_strings(self):
         result = fetch_new_files(
             "test_processed_bucket",
-            "2024-11-02T14:25:52Z"
+            datetime.strptime(
+                "02-11-2024-142552", "%d-%m-%Y-%H%M%S")
         )
         assert isinstance(result, list)
 
@@ -96,7 +97,8 @@ class TestFetchNewFile:
 
         result = fetch_new_files(
             "test_processed_bucket",
-            "2024-11-02T14:23:30Z"
+            datetime.strptime(
+                "02-11-2024-142330", "%d-%m-%Y-%H%M%S")
         )
         assert result == expected
 
@@ -120,7 +122,8 @@ class TestFetchNewFile:
 
         result = fetch_new_files(
             "test_processed_bucket",
-            "2024-11-02T14:26:30Z"
+            datetime.strptime(
+                "02-11-2024-142630", "%d-%m-%Y-%H%M%S")
         )
         assert result == []
 
