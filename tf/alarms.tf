@@ -1,3 +1,9 @@
+resource "aws_sns_topic" "error_alerting" {
+  name = "data_pipeline_error_alerting"
+}
+
+
+
 resource "aws_cloudwatch_log_metric_filter" "interface_error" {
     name = "InterfaceErrorFilter"
     pattern = "Error interacting with source database"
@@ -20,7 +26,8 @@ resource "aws_cloudwatch_metric_alarm" "alert_interface_error" {
     statistic = "Sum"
     threshold = 1
     alarm_description = "Monitors Interface Error occurences"
-    insufficient_data_actions = []
+    alarm_actions = [aws_sns_topic.error_alerting.arn]
+    treat_missing_data = "notBreaching"
 }
 
 
@@ -47,7 +54,8 @@ resource "aws_cloudwatch_metric_alarm" "alert_resource_not_found_error" {
     statistic = "Sum"
     threshold = 1
     alarm_description = "Monitors Resource Not Found Error occurences"
-    insufficient_data_actions = []
+    alarm_actions = [aws_sns_topic.error_alerting.arn]
+    treat_missing_data = "notBreaching"
 }
 
 
@@ -74,7 +82,8 @@ resource "aws_cloudwatch_metric_alarm" "alert_no_such_bucket_error" {
     statistic = "Sum"
     threshold = 1
     alarm_description = "Monitors No Such Bucket Error occurences"
-    insufficient_data_actions = []
+    alarm_actions = [aws_sns_topic.error_alerting.arn]
+    treat_missing_data = "notBreaching"
 }
 
 
@@ -101,7 +110,8 @@ resource "aws_cloudwatch_metric_alarm" "alert_client_error" {
     statistic = "Sum"
     threshold = 1
     alarm_description = "Monitors Client Error occurences"
-    insufficient_data_actions = []
+    alarm_actions = [aws_sns_topic.error_alerting.arn]
+    treat_missing_data = "notBreaching"
 }
 
 
@@ -128,7 +138,8 @@ resource "aws_cloudwatch_metric_alarm" "alert_unexpected_error" {
     statistic = "Sum"
     threshold = 1
     alarm_description = "Monitors Unexpected Error occurences"
-    insufficient_data_actions = []
+    alarm_actions = [aws_sns_topic.error_alerting.arn]
+    treat_missing_data = "notBreaching"
 }
 
 resource "aws_cloudwatch_log_metric_filter" "processor_interface_error" {
@@ -153,7 +164,8 @@ resource "aws_cloudwatch_metric_alarm" "alert_processor_interface_error" {
     statistic = "Sum"
     threshold = 1
     alarm_description = "Monitors Interface Error occurences"
-    insufficient_data_actions = []
+    alarm_actions = [aws_sns_topic.error_alerting.arn]
+    treat_missing_data = "notBreaching"
 }
 
 
@@ -180,7 +192,8 @@ resource "aws_cloudwatch_metric_alarm" "alert_processor_resource_not_found_error
     statistic = "Sum"
     threshold = 1
     alarm_description = "Monitors Resource Not Found Error occurences"
-    insufficient_data_actions = []
+    alarm_actions = [aws_sns_topic.error_alerting.arn]
+    treat_missing_data = "notBreaching"
 }
 
 
@@ -207,7 +220,8 @@ resource "aws_cloudwatch_metric_alarm" "processor_alert_no_such_bucket_error" {
     statistic = "Sum"
     threshold = 1
     alarm_description = "Monitors No Such Bucket Error occurences"
-    insufficient_data_actions = []
+    alarm_actions = [aws_sns_topic.error_alerting.arn]
+    treat_missing_data = "notBreaching"
 }
 
 
@@ -234,7 +248,8 @@ resource "aws_cloudwatch_metric_alarm" "processor_alert_client_error" {
     statistic = "Sum"
     threshold = 1
     alarm_description = "Monitors Client Error occurences"
-    insufficient_data_actions = []
+    alarm_actions = [aws_sns_topic.error_alerting.arn]
+    treat_missing_data = "notBreaching"
 }
 
 
@@ -261,5 +276,6 @@ resource "aws_cloudwatch_metric_alarm" "processor_alert_unexpected_error" {
     statistic = "Sum"
     threshold = 1
     alarm_description = "Monitors Unexpected Error occurences"
-    insufficient_data_actions = []
+    alarm_actions = [aws_sns_topic.error_alerting.arn]
+    treat_missing_data = "notBreaching"
 }
