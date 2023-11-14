@@ -58,7 +58,7 @@ def test_payment_data():
             "payment_amount": 552548.62,
             "currency_id": 2,
             "payment_type_id": 3,
-            "paid": False,
+            "paid": 'false',
             "payment_date": '2022-11-04'
         },
         {
@@ -72,7 +72,7 @@ def test_payment_data():
             "payment_amount": 205952.22,
             "currency_id": 3,
             "payment_type_id": 1,
-            "paid": False,
+            "paid": 'false',
             "payment_date": '2022-11-03'
         }, {
             "payment_id": 5,
@@ -85,7 +85,7 @@ def test_payment_data():
             "payment_amount": 57067.20,
             "currency_id": 2,
             "payment_type_id": 3,
-            "paid": False,
+            "paid": 'false',
             "payment_date": '2022-11-06'
         }
     ]

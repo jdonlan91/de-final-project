@@ -32,13 +32,13 @@ def test_transaction_data():
         {
             "transaction_id": 1,
             "transaction_type": 'PURCHASE',
-            "sales_order_id": None,
+            "sales_order_id": '',
             "purchase_order_id": 2,
         },
         {
             "transaction_id": 2,
             "transaction_type": 'PURCHASE',
-            "sales_order_id": None,
+            "sales_order_id": '',
             "purchase_order_id": 3,
         }, {
             "transaction_id": 3,

@@ -8,6 +8,7 @@ from unittest.mock import patch
 
 from src.processor.utils.transform_data import (
     transform_data,
+    apply_data_type,
     get_db_credentials,
     create_connection,
     query_database,
@@ -75,6 +76,18 @@ class TestTransformData:
         result = transform_data(test_file_name, test_input_design_data)
 
         assert result == test_output_design_data
+
+
+class TestApplyDataType:
+    def test_returns_none_when_passed_empty_string(self):
+        assert apply_data_type('', int) == ''
+        assert apply_data_type('', float) == ''
+
+    def test_returns_an_int(self):
+        assert apply_data_type('5', int) == 5
+
+    def test_returns_a_floating_point_number(self):
+        assert apply_data_type('2.5', float) == 2.5
 
 
 class TestGetDbCredentials:
@@ -378,8 +391,8 @@ class TestTransformPayment():
 
 class TestTransformPurchaseOrder():
     def test_returns_list_of_dictionaries(self,
-                                          test_purchase_order_data):  # noqa: F811
-        test_input_purchase_order_data, test_output_purchase_order_data = test_purchase_order_data  # noqa: F811
+                                          test_purchase_order_data):  # noqa: F811,E501
+        test_input_purchase_order_data, test_output_purchase_order_data = test_purchase_order_data  # noqa: 501
 
         result = transform_purchase_order(test_input_purchase_order_data)
 
@@ -394,8 +407,8 @@ class TestTransformPurchaseOrder():
     ):
         assert transform_purchase_order([]) == []
 
-    def test_returns_transformed_data(self, test_purchase_order_data):  # noqa: F811
-        test_input_purchase_order_data, test_output_purchase_order_data = test_purchase_order_data  # noqa: F811
+    def test_returns_transformed_data(self, test_purchase_order_data):  # noqa: F811,E501
+        test_input_purchase_order_data, test_output_purchase_order_data = test_purchase_order_data  # noqa: 501
         result = transform_purchase_order(test_input_purchase_order_data)
         expected = test_output_purchase_order_data
         assert result == expected
@@ -403,8 +416,8 @@ class TestTransformPurchaseOrder():
 
 class TestTransformPaymentType():
     def test_returns_list_of_dictionaries(self,
-                                          test_payment_type_data):  # noqa: F811
-        test_input_payment_type_data, test_output_payment_type_data = test_payment_type_data  # noqa: F811
+                                          test_payment_type_data):  # noqa: F811,E501
+        test_input_payment_type_data, test_output_payment_type_data = test_payment_type_data  # noqa: 501
 
         result = transform_payment_type(test_input_payment_type_data)
 
@@ -419,8 +432,8 @@ class TestTransformPaymentType():
     ):
         assert transform_payment_type([]) == []
 
-    def test_returns_transformed_data(self, test_payment_type_data):  # noqa: F811
-        test_input_payment_type_data, test_output_payment_type_data = test_payment_type_data
+    def test_returns_transformed_data(self, test_payment_type_data):  # noqa: 501
+        test_input_payment_type_data, test_output_payment_type_data = test_payment_type_data  # noqa: 501
         result = transform_payment_type(test_input_payment_type_data)
         expected = test_output_payment_type_data
         assert result == expected
@@ -429,7 +442,7 @@ class TestTransformPaymentType():
 class TestTransformTransaction():
     def test_returns_list_of_dictionaries(self,
                                           test_transaction_data):  # noqa: F811
-        test_input_transaction_data, test_output_transaction_data = test_transaction_data  # noqa: F811
+        test_input_transaction_data, test_output_transaction_data = test_transaction_data  # noqa: 501
 
         result = transform_transaction(test_input_transaction_data)
 
@@ -444,8 +457,8 @@ class TestTransformTransaction():
     ):
         assert transform_transaction([]) == []
 
-    def test_returns_transformed_data(self, test_transaction_data):  # noqa: F811
-        test_input_transaction_data, test_output_transaction_data = test_transaction_data
+    def test_returns_transformed_data(self, test_transaction_data):  # noqa: 501
+        test_input_transaction_data, test_output_transaction_data = test_transaction_data  # noqa: 501
         result = transform_transaction(test_input_transaction_data)
         expected = test_output_transaction_data
         assert result == expected
