@@ -4,9 +4,9 @@ import os
 import pytest
 
 import boto3
-# from botocore.exceptions import ClientError
+from botocore.exceptions import ClientError
 from moto import mock_secretsmanager, mock_s3, mock_logs
-# from pg8000.exceptions import InterfaceError
+from pg8000.exceptions import InterfaceError
 from unittest.mock import patch
 
 from src.loader.loader import (
@@ -30,8 +30,8 @@ def aws_credentials():
 @pytest.fixture
 def test_event():
     return {
-            "timestamp": "2024-11-02T14:20:00Z",
-            "bucket_name": "test_processed_bucket",
+        "timestamp": "2024-11-02T14:20:00Z",
+        "bucket_name": "test_processed_bucket",
     }
 
 
@@ -92,15 +92,15 @@ class TestSeedDimDate:
     @patch("src.loader.loader.get_db_credentials")
     @mock_secretsmanager
     def test_seed_dim_date_is_not_called_if_not_first_invocation(
-            self,
-            mock_get_db_credentials,
-            mock_prev_invoc,
-            mock_seed,
-            mock_fetch,
-            mock_read,
-            mock_populate,
-            mock_log,
-            test_event
+        self,
+        mock_get_db_credentials,
+        mock_prev_invoc,
+        mock_seed,
+        mock_fetch,
+        mock_read,
+        mock_populate,
+        mock_log,
+        test_event
     ):
         mock_get_db_credentials.return_value = test_db_credentials
         mock_prev_invoc.return_value = "31-10-2023-152600"
@@ -122,16 +122,16 @@ class TestUtilFunctionInvocations:
     @patch("src.loader.loader.get_db_credentials")
     @mock_secretsmanager
     def test_fetch_new_files_called_with_correct_arguments(
-            self,
-            mock_get_db_credentials,
-            mock_prev_invoc,
-            mock_seed,
-            mock_fetch,
-            mock_read,
-            mock_populate,
-            mock_log,
-            mock_logger,
-            test_event
+        self,
+        mock_get_db_credentials,
+        mock_prev_invoc,
+        mock_seed,
+        mock_fetch,
+        mock_read,
+        mock_populate,
+        mock_log,
+        mock_logger,
+        test_event
     ):
         mock_get_db_credentials.return_value = test_db_credentials
         mock_prev_invoc.return_value = "31-10-2023-152600"
@@ -154,16 +154,16 @@ class TestUtilFunctionInvocations:
     @patch("src.loader.loader.get_db_credentials")
     @mock_secretsmanager
     def test_if_fetch_new_files_returns_empty_list_correct_msg_logged_and_execution_stops(  # noqa: E501
-            self,
-            mock_get_db_credentials,
-            mock_prev_invoc,
-            mock_seed,
-            mock_fetch,
-            mock_read,
-            mock_populate,
-            mock_log,
-            mock_logger,
-            test_event
+        self,
+        mock_get_db_credentials,
+        mock_prev_invoc,
+        mock_seed,
+        mock_fetch,
+        mock_read,
+        mock_populate,
+        mock_log,
+        mock_logger,
+        test_event
     ):
         mock_get_db_credentials.return_value = test_db_credentials
         mock_prev_invoc.return_value = "31-10-2023-152600"
@@ -183,16 +183,16 @@ class TestUtilFunctionInvocations:
     @patch("src.loader.loader.get_db_credentials")
     @mock_secretsmanager
     def test_if_fetch_new_files_returns_new_files_read_parquet_and_populate_schema_called_correctly(  # noqa: E501
-            self,
-            mock_get_db_credentials,
-            mock_prev_invoc,
-            mock_seed,
-            mock_fetch,
-            mock_read,
-            mock_populate,
-            mock_log,
-            mock_logger,
-            test_event
+        self,
+        mock_get_db_credentials,
+        mock_prev_invoc,
+        mock_seed,
+        mock_fetch,
+        mock_read,
+        mock_populate,
+        mock_log,
+        mock_logger,
+        test_event
     ):
         mock_get_db_credentials.return_value = test_db_credentials
         mock_prev_invoc.return_value = "31-10-2023-152600"
@@ -300,3 +300,140 @@ class TestGetPreviousInvocation():
             "test_log_group", "test_log_stream")
 
         assert prev_invocation is None
+
+
+@patch("src.loader.loader.logger")
+@patch("src.loader.loader.log_invocation_time")
+@patch("src.loader.loader.populate_schema")
+@patch("src.loader.loader.read_parquet")
+@patch("src.loader.loader.fetch_new_files")
+@patch("src.loader.utils.seed_dim_date")
+@patch("src.loader.loader.get_previous_invocation")
+@patch("src.loader.loader.get_db_credentials")
+class TestErrorLogging:
+    def test_when_error_with_source_db_logs_correct_error_message(
+        self,
+        mock_get_db_credentials,
+        mock_prev_invoc,
+        mock_seed,
+        mock_fetch,
+        mock_read,
+        mock_populate,
+        mock_log,
+        mock_logger,
+        test_event
+    ):
+        mock_get_db_credentials.return_value = test_db_credentials
+        mock_prev_invoc.return_value = "31-10-2023-152600"
+        mock_fetch.return_value = ["test-file-one", "test-file-two"]
+        mock_read.return_value = "test-csv-string"
+        mock_populate.side_effect = InterfaceError
+        lambda_handler(event=test_event, context=None)
+
+        mock_logger.error.assert_called_once_with(
+            "Error interacting with database.")
+
+    def test_when_error_finding_a_secret_logs_correct_error_message(
+        self,
+        mock_get_db_credentials,
+        mock_prev_invoc,
+        mock_seed,
+        mock_fetch,
+        mock_read,
+        mock_populate,
+        mock_log,
+        mock_logger,
+        test_event
+    ):
+        mock_get_db_credentials.side_effect = ClientError(
+            {
+                "Error": {
+                    "Code": "ResourceNotFoundException",
+                }
+            },
+            "Operation name",
+        )
+
+        lambda_handler(event=test_event, context=None)
+
+        mock_logger.error.assert_called_once_with(
+            "Error getting database credentials from Secrets Manager."
+        )
+
+    def test_when_error_accessing_a_bucket_logs_correct_error_message(
+        self,
+        mock_get_db_credentials,
+        mock_prev_invoc,
+        mock_seed,
+        mock_fetch,
+        mock_read,
+        mock_populate,
+        mock_log,
+        mock_logger,
+        test_event
+    ):
+        mock_get_db_credentials.return_value = test_db_credentials
+        mock_prev_invoc.return_value = "31-10-2023-152600"
+        mock_fetch.side_effect = ClientError(
+            {
+                "Error": {
+                    "Code": "NoSuchBucket",
+                }
+            },
+            "Operation name",
+        )
+
+        lambda_handler(event=test_event, context=None)
+
+        mock_logger.error.assert_called_once_with(
+            "Error acessing the bucket. NoSuchBucket."
+        )
+
+    def test_when_general_aws_error_logs_correct_error_message(
+        self,
+        mock_get_db_credentials,
+        mock_prev_invoc,
+        mock_seed,
+        mock_fetch,
+        mock_read,
+        mock_populate,
+        mock_log,
+        mock_logger,
+        test_event
+    ):
+        mock_get_db_credentials.return_value = test_db_credentials
+        mock_prev_invoc.side_effect = ClientError(
+            {
+                "Error": {
+                    "Code": "SampleErrorCode",
+                    "Message": "Example error message",
+                }
+            },
+            "Operation name",
+        )
+
+        lambda_handler(event=test_event, context=None)
+
+        mock_logger.error.assert_called_once_with(
+            "AWS client error SampleErrorCode.\nExample error message."
+        )
+
+    def test_when_general_exception_logs_correct_error_message(
+        self,
+        mock_get_db_credentials,
+        mock_prev_invoc,
+        mock_seed,
+        mock_fetch,
+        mock_read,
+        mock_populate,
+        mock_log,
+        mock_logger,
+        test_event
+    ):
+        mock_get_db_credentials.return_value = test_db_credentials
+        mock_prev_invoc.return_value = "31-10-2023-152600"
+        mock_fetch.side_effect = Exception
+
+        lambda_handler(event=test_event, context=None)
+
+        mock_logger.error.assert_any_call("Unexpected error occurred.")

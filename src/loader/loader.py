@@ -3,6 +3,8 @@ import json
 import logging
 
 import boto3
+from botocore.exceptions import ClientError
+from pg8000.exceptions import InterfaceError
 
 from src.loader.utils.seed_dim_date import seed_dim_date
 from src.loader.utils.fetch_new_files import fetch_new_files
@@ -32,31 +34,51 @@ def lambda_handler(event, context):
     load the data into the appropriate table (populate_schema)
     in the destination warehouse
 """
-    db_credentials = get_db_credentials()
+    try:
+        db_credentials = get_db_credentials()
 
-    prev_invocation = get_previous_invocation(
-        '/aws/lambda/loader', 'loader_history')
-    this_invocation = datetime.fromisoformat(
-        event["timestamp"])
-    bucket_name = event["bucket_name"]
-    long_time_ago = datetime.strptime(
-        "01-01-2001-000000", "%d-%m-%Y-%H%M%S")
-    cutoff = long_time_ago if prev_invocation is None else prev_invocation
+        prev_invocation = get_previous_invocation(
+            '/aws/lambda/loader', 'loader_history')
+        this_invocation = datetime.fromisoformat(
+            event["timestamp"])
+        bucket_name = event["bucket_name"]
+        long_time_ago = datetime.strptime(
+            "01-01-2001-000000", "%d-%m-%Y-%H%M%S")
+        cutoff = long_time_ago if prev_invocation is None else prev_invocation
 
-    if cutoff == long_time_ago:
-        seed_dim_date(db_credentials)
+        if cutoff == long_time_ago:
+            seed_dim_date(db_credentials)
 
-    new_file_names = fetch_new_files(bucket_name, cutoff)
-    if new_file_names == []:
-        logger.info("No new files.")
-    else:
-        for file_name in new_file_names:
-            csv_string = read_parquet(file_name, bucket_name)
-            result = populate_schema(db_credentials, file_name, csv_string)
-            logger.info(result)
+        new_file_names = fetch_new_files(bucket_name, cutoff)
+        if new_file_names == []:
+            logger.info("No new files.")
+        else:
+            for file_name in new_file_names:
+                csv_string = read_parquet(file_name, bucket_name)
+                result = populate_schema(db_credentials, file_name, csv_string)
+                logger.info(result)
 
-    log_invocation_time(
-            this_invocation, '/aws/lambda/loader', 'loader_history')
+        log_invocation_time(
+            this_invocation,
+            '/aws/lambda/loader',
+            'loader_history'
+        )
+    except InterfaceError:
+        logger.error("Error interacting with database.")
+    except ClientError as c:
+        if c.response["Error"]["Code"] == "ResourceNotFoundException":
+            logger.error(
+                "Error getting database credentials from Secrets Manager.")
+        elif c.response["Error"]["Code"] == "NoSuchBucket":
+            logger.error("Error acessing the bucket. NoSuchBucket.")
+        else:
+            logger.error(
+                f"""AWS client error {c.response['Error']['Code']}.
+{c.response['Error']['Message']}."""
+            )
+    except Exception as e:
+        logger.error("Unexpected error occurred.")
+        logger.error(e)
 
 
 def get_db_credentials():
