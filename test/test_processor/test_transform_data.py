@@ -47,7 +47,6 @@ class TestTransformData:
         test_design_data  # noqa: F811
     ):
         test_input_design_data, _ = test_design_data
-
         result = transform_data(test_file_name, test_input_design_data)
 
         assert isinstance(result, list)
@@ -57,10 +56,20 @@ class TestTransformData:
 
     def test_returns_an_empty_list_if_no_transform_function_found(
         self,
-        test_file_name,
         test_design_data  # noqa: F811
     ):
-        pass
+        test_input_design_data, _ = test_design_data
+        result = transform_data("non_existent_table", test_design_data)
+
+        assert result is None
+
+    def test_returns_an_empty_list_if_passed_empty_data(
+        self,
+        test_file_name
+    ):
+        result = transform_data(test_file_name, [])
+
+        assert result == []
 
     @patch("src.processor.utils.transform_data.transform_design")
     def test_calls_the_appropriate_transform_data_function(
@@ -70,7 +79,6 @@ class TestTransformData:
         test_design_data  # noqa: F811
     ):
         test_input_design_data, _ = test_design_data
-
         transform_data(test_file_name, test_input_design_data)
 
         assert mock_transform_design.call_count == 1
@@ -82,7 +90,6 @@ class TestTransformData:
         test_design_data  # noqa: F811
     ):
         test_input_design_data, test_output_design_data = test_design_data
-
         result = transform_data(test_file_name, test_input_design_data)
 
         assert result == test_output_design_data
