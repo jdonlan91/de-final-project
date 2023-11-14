@@ -6,10 +6,10 @@ import boto3
 from botocore.exceptions import ClientError
 from pg8000.exceptions import InterfaceError
 
-from src.loader.utils.seed_dim_date import seed_dim_date
-from src.loader.utils.fetch_new_files import fetch_new_files
-from src.loader.utils.read_parquet import read_parquet
-from src.loader.utils.populate_schema import populate_schema
+from utils.fetch_new_files import fetch_new_files
+from utils.populate_schema import populate_schema
+from utils.read_parquet import read_parquet
+from utils.seed_dim_date import seed_dim_date
 
 
 logger = logging.getLogger("Loader logger")

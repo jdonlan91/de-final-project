@@ -13,7 +13,7 @@ from src.loader.loader import (
     lambda_handler,
     get_db_credentials,
     log_invocation_time,
-    get_previous_invocation
+    get_previous_invocation,
 )
 
 
@@ -87,7 +87,7 @@ class TestSeedDimDate:
     @patch("src.loader.loader.populate_schema")
     @patch("src.loader.loader.read_parquet")
     @patch("src.loader.loader.fetch_new_files")
-    @patch("src.loader.utils.seed_dim_date")
+    @patch("src.loader.loader.seed_dim_date")
     @patch("src.loader.loader.get_previous_invocation")
     @patch("src.loader.loader.get_db_credentials")
     @mock_secretsmanager
@@ -111,16 +111,16 @@ class TestSeedDimDate:
         assert mock_seed.call_count == 0
 
 
+@patch("src.loader.loader.logger")
+@patch("src.loader.loader.log_invocation_time")
+@patch("src.loader.loader.populate_schema")
+@patch("src.loader.loader.read_parquet")
+@patch("src.loader.loader.fetch_new_files")
+@patch("src.loader.loader.seed_dim_date")
+@patch("src.loader.loader.get_previous_invocation")
+@patch("src.loader.loader.get_db_credentials")
+@mock_secretsmanager
 class TestUtilFunctionInvocations:
-    @patch("src.loader.loader.logger")
-    @patch("src.loader.loader.log_invocation_time")
-    @patch("src.loader.loader.populate_schema")
-    @patch("src.loader.loader.read_parquet")
-    @patch("src.loader.loader.fetch_new_files")
-    @patch("src.loader.utils.seed_dim_date")
-    @patch("src.loader.loader.get_previous_invocation")
-    @patch("src.loader.loader.get_db_credentials")
-    @mock_secretsmanager
     def test_fetch_new_files_called_with_correct_arguments(
         self,
         mock_get_db_credentials,
@@ -144,15 +144,6 @@ class TestUtilFunctionInvocations:
         )
         mock_logger.info.assert_called_once_with("No new files.")
 
-    @patch("src.loader.loader.logger")
-    @patch("src.loader.loader.log_invocation_time")
-    @patch("src.loader.loader.populate_schema")
-    @patch("src.loader.loader.read_parquet")
-    @patch("src.loader.loader.fetch_new_files")
-    @patch("src.loader.utils.seed_dim_date")
-    @patch("src.loader.loader.get_previous_invocation")
-    @patch("src.loader.loader.get_db_credentials")
-    @mock_secretsmanager
     def test_if_fetch_new_files_returns_empty_list_correct_msg_logged_and_execution_stops(  # noqa: E501
         self,
         mock_get_db_credentials,
@@ -173,15 +164,6 @@ class TestUtilFunctionInvocations:
         assert mock_read.call_count == 0
         assert mock_populate.call_count == 0
 
-    @patch("src.loader.loader.logger")
-    @patch("src.loader.loader.log_invocation_time")
-    @patch("src.loader.loader.populate_schema")
-    @patch("src.loader.loader.read_parquet")
-    @patch("src.loader.loader.fetch_new_files")
-    @patch("src.loader.utils.seed_dim_date")
-    @patch("src.loader.loader.get_previous_invocation")
-    @patch("src.loader.loader.get_db_credentials")
-    @mock_secretsmanager
     def test_if_fetch_new_files_returns_new_files_read_parquet_and_populate_schema_called_correctly(  # noqa: E501
         self,
         mock_get_db_credentials,
@@ -307,7 +289,7 @@ class TestGetPreviousInvocation():
 @patch("src.loader.loader.populate_schema")
 @patch("src.loader.loader.read_parquet")
 @patch("src.loader.loader.fetch_new_files")
-@patch("src.loader.utils.seed_dim_date")
+@patch("src.loader.loader.seed_dim_date")
 @patch("src.loader.loader.get_previous_invocation")
 @patch("src.loader.loader.get_db_credentials")
 class TestErrorLogging:
