@@ -1,6 +1,6 @@
 .coverage
 .env
-.terraform
+.terraform*
 .pytest_cache
 __pycache__
 **__pycache__
