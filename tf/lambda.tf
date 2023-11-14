@@ -77,3 +77,9 @@ resource "aws_lambda_function" "loader" {
     runtime = "python3.11"
     timeout = 300
 }
+
+
+resource "aws_cloudwatch_log_stream" "loader_history" {
+  name           = "loader_history"
+  log_group_name = "/aws/lambda/${aws_lambda_function.loader.function_name}"
+}

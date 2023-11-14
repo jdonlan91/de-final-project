@@ -11,7 +11,7 @@ def create_connection(db_credentials):
     )
 
 
-def populate_schema(db_credentials, table_name, csv_string):
+def populate_schema(db_credentials, file_name, csv_string):
     """
     Takes data in csv format from read_parquet and populates
     a star schema database with this data.
@@ -27,6 +27,7 @@ def populate_schema(db_credentials, table_name, csv_string):
     """
     try:
         conn = create_connection(db_credentials)
+        table_name = file_name.split('/')[0]
 
         temp_tbl_name = f"temp_{table_name}"
         column_names = csv_string.split("\n")[0]
@@ -56,6 +57,7 @@ def populate_schema(db_credentials, table_name, csv_string):
         conn.run(populate_temp, stream=csv_obj)
         conn.run(formatted_query)
         conn.run("COMMIT;")
+        return f"File {file_name} loaded."
 
     except Exception as e:
         raise e
