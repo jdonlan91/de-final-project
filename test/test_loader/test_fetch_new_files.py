@@ -37,25 +37,25 @@ class TestFetchNewFile:
     @pytest.fixture(autouse=True)
     def create_test_files(self, empty_bucket, s3):
         convert_and_dump_parquet(
-            filename="dim_staff/02-11-2024/02-11-2024-142200.csv",
+            filename="staff/02-11-2024/02-11-2024-142200.csv",
             transformed_data=[],
             bucket_name="test_processed_bucket"
         )
 
         convert_and_dump_parquet(
-            filename="dim_staff/02-11-2024/02-11-2024-142300.csv",
+            filename="staff/02-11-2024/02-11-2024-142300.csv",
             transformed_data=[],
             bucket_name="test_processed_bucket"
         )
 
         convert_and_dump_parquet(
-            filename="dim_staff/02-11-2024/02-11-2024-142400.csv",
+            filename="staff/02-11-2024/02-11-2024-142400.csv",
             transformed_data=[],
             bucket_name="test_processed_bucket"
         )
 
         convert_and_dump_parquet(
-            filename="dim_staff/02-11-2024/02-11-2024-142500.csv",
+            filename="staff/02-11-2024/02-11-2024-142500.csv",
             transformed_data=[],
             bucket_name="test_processed_bucket"
         )
@@ -128,10 +128,10 @@ class TestFetchNewFile:
 class TestSortNewFiles:
     def test_sorts_by_timestamp(self):
         unsorted_file_names = [
-           'dim_staff/02-11-2024/02-11-2024-142500.parquet',
-           'dim_staff/02-11-2024/02-11-2024-132500.parquet',
-           'dim_staff/02-11-2024/02-11-2024-152500.parquet',
-           'dim_staff/02-11-2024/02-11-2024-102500.parquet'
+            'dim_staff/02-11-2024/02-11-2024-142500.parquet',
+            'dim_staff/02-11-2024/02-11-2024-132500.parquet',
+            'dim_staff/02-11-2024/02-11-2024-152500.parquet',
+            'dim_staff/02-11-2024/02-11-2024-102500.parquet'
         ]
 
         expected = [
@@ -145,10 +145,10 @@ class TestSortNewFiles:
 
     def test_if_same_timestamp_sorts_by_table_name(self):
         unsorted_file_names = [
-           'dim_staff/02-11-2024/02-11-2024-142500.parquet',
-           'fact_sales_order/02-11-2024/02-11-2024-142500.parquet',
-           'dim_design/02-11-2024/02-11-2024-142500.parquet',
-           'fact_sales_order/02-11-2024/02-11-2024-140000.parquet'
+            'dim_staff/02-11-2024/02-11-2024-142500.parquet',
+            'fact_sales_order/02-11-2024/02-11-2024-142500.parquet',
+            'dim_design/02-11-2024/02-11-2024-142500.parquet',
+            'fact_sales_order/02-11-2024/02-11-2024-140000.parquet'
         ]
 
         expected = [

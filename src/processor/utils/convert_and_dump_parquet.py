@@ -6,8 +6,19 @@ from io import BytesIO
 
 
 def generate_object_key(filename):
-    extracted_name = filename[:-3]
-    return f"{extracted_name}parquet"
+    table_name_converter = {
+        'design': 'dim_design',
+        'staff': 'dim_staff',
+        'counterparty': 'dim_counterparty',
+        'currency': 'dim_currency',
+        'sales_order': 'fact_sales_order',
+        'address': 'dim_location'
+    }
+    old_table_name = filename.split('/')[0]
+    new_table_name = table_name_converter[old_table_name]
+    date = filename.split('/')[1]
+    timestamp = filename.split('/')[2][:-4]
+    return f"{new_table_name}/{date}/{timestamp}.parquet"
 
 
 def convert_and_dump_parquet(filename,
