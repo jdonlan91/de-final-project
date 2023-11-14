@@ -72,15 +72,19 @@ def query_database(table_name, column_name, foreign_key, foreign_key_value):
     db_credentials = get_db_credentials()
     conn = create_connection(db_credentials)
 
-    query = f"""
-        SELECT {identifier(column_name)}
-        FROM {identifier(table_name)}
-        WHERE {identifier(foreign_key)} = {literal(foreign_key_value)}
-    """
+    try:
+        query = f"""
+            SELECT {identifier(column_name)}
+            FROM {identifier(table_name)}
+            WHERE {identifier(foreign_key)} = {literal(foreign_key_value)}
+        """
 
-    query_result = conn.run(query)
+        query_result = conn.run(query)
 
-    return query_result[0][0]
+        return query_result[0][0]
+
+    finally:
+        conn.close()
 
 
 def transform_counterparty(data):

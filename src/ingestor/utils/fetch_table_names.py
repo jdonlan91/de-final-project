@@ -47,4 +47,4 @@ def fetch_table_names(db_credentials):
 
     finally:
         if conn:
-            close.conn()
+            conn.close()
