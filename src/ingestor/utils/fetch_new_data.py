@@ -60,3 +60,7 @@ def fetch_new_data(table_name: str, timestamp, db_credentials) -> list[dict]:
 
     except Exception as e:
         raise e
+
+    finally:
+        if conn:
+            conn.close()

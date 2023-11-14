@@ -32,14 +32,19 @@ def fetch_table_names(db_credentials):
     Returns:
         <list> a list of table names in the database
     """
-    conn = create_connection(db_credentials)
+    try:
+        conn = create_connection(db_credentials)
 
-    query = """
-        SELECT table_name
-        FROM information_schema.tables
-        WHERE table_schema = 'public'
-        AND table_name NOT LIKE '_prisma_migrations'
-    """
-    query_result = conn.run(query)
+        query = """
+            SELECT table_name
+            FROM information_schema.tables
+            WHERE table_schema = 'public'
+            AND table_name NOT LIKE '_prisma_migrations'
+        """
+        query_result = conn.run(query)
 
-    return flatten_single_subitem_list(query_result)
+        return flatten_single_subitem_list(query_result)
+
+    finally:
+        if conn:
+            close.conn()
