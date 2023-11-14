@@ -81,12 +81,6 @@ resource "aws_lambda_function" "loader" {
     timeout = 300
 }
 
-resource "aws_lambda_layer_version" "loader_utils_layer" {
-    filename = data.archive_file.loader_utils.output_path
-    layer_name = "loader_utils_layer"
-    source_code_hash = data.archive_file.loader_utils.output_base64sha256
-}
-
 
 resource "aws_lambda_layer_version" "loader_utils_layer" {
     filename = data.archive_file.loader_utils.output_path
