@@ -296,3 +296,7 @@ def transform_transaction(data):
     ]
 
     return transformed_data
+
+
+def transform_department(data):
+    pass

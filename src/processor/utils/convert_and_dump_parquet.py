@@ -7,12 +7,16 @@ from io import BytesIO
 
 def generate_object_key(filename):
     table_name_converter = {
-        'design': 'dim_design',
-        'staff': 'dim_staff',
+        'address': 'dim_location',
         'counterparty': 'dim_counterparty',
         'currency': 'dim_currency',
+        'design': 'dim_design',
+        'payment': 'fact_payment',
+        'payment_type': 'dim_payment_type',
+        'purchase_order': 'fact_purchase_order',
         'sales_order': 'fact_sales_order',
-        'address': 'dim_location'
+        'staff': 'dim_staff',
+        'transaction': 'dim_transaction',
     }
     old_table_name = filename.split('/')[0]
     new_table_name = table_name_converter[old_table_name]
