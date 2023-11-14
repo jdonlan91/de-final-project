@@ -17,10 +17,17 @@ def transform_data(file_name, data):
         <list><dict> the transformed data as a list of dictionaries.
             Returns an empty list if the data has no transformation available.
     """
-    transform_to_apply = "transform_" + file_name.split('/')[0]
-    transformed_data = globals()[transform_to_apply](data)
+    try:
+        table_name = file_name.split('/')[0]
+        transform_to_apply = "transform_" + table_name
+        transformed_data = globals()[transform_to_apply](data)
 
-    return transformed_data
+        return transformed_data
+
+    except Exception as e:
+        if e == KeyError:
+            print(f'No available transformation for {table_name}')
+            return None
 
 
 def apply_data_type(string, data_type):
