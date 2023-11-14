@@ -9,10 +9,22 @@ from src.processor.utils.convert_and_dump_parquet import (
 
 
 class TestGenerateObjectKey:
-    def test_generate_object_key(self):
-        expected = "test_table/31-10-2023/31-10-2023-152600.parquet"
+    def test_generates_file_name_matching_star_schema_tables(self):
+        expected = "dim_design/31-10-2023/31-10-2023-152600.parquet"
         result = generate_object_key(
-            "test_table/31-10-2023/31-10-2023-152600.csv"
+            "design/31-10-2023/31-10-2023-152600.csv"
+        )
+        assert result == expected
+
+        expected = "fact_sales_order/31-10-2023/31-10-2023-152600.parquet"
+        result = generate_object_key(
+            "sales_order/31-10-2023/31-10-2023-152600.csv"
+        )
+        assert result == expected
+
+        expected = "dim_location/31-10-2023/31-10-2023-152600.parquet"
+        result = generate_object_key(
+            "address/31-10-2023/31-10-2023-152600.csv"
         )
         assert result == expected
 
@@ -46,24 +58,24 @@ class TestDumpParquet:
 
     def test_puts_parquet_file_in_bucket(self, s3, test_data, empty_bucket):
         convert_and_dump_parquet(
-            "test_table/31-10-2023/31-10-2023-152600.csv",
+            "design/31-10-2023/31-10-2023-152600.csv",
             test_data,
             "test_processed_bucket"
         )
         response = s3.list_objects(Bucket="test_processed_bucket")
         filename = response["Contents"][0]["Key"]
-        assert filename == "test_table/31-10-2023/31-10-2023-152600.parquet"
+        assert filename == "dim_design/31-10-2023/31-10-2023-152600.parquet"
 
     def test_returns_the_created_file_name(self, test_data, empty_bucket):
         assert convert_and_dump_parquet(
-            "test_table/31-10-2023/31-10-2023-152600.csv",
+            "design/31-10-2023/31-10-2023-152600.csv",
             test_data,
             "test_processed_bucket"
-        ) == "test_table/31-10-2023/31-10-2023-152600.parquet"
+        ) == "dim_design/31-10-2023/31-10-2023-152600.parquet"
 
     def test_raises_an_error(self, test_data):
         with pytest.raises(Exception):
             convert_and_dump_parquet(
-                "test_table/31-10-2023/31-10-2023-152600.csv",
+                "design/31-10-2023/31-10-2023-152600.csv",
                 test_data,
                 "invalid_bucket")

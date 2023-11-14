@@ -21,12 +21,12 @@ def test_data():
 @pytest.fixture
 def test_event():
     return {"Records": [
-                {
-                    "s3": {
-                        "object": {"key": "test_path/test_name.csv"},
-                        "bucket": {"name": "test_read_bucket"}}
-                }
-            ]}
+        {
+            "s3": {
+                "object": {"key": "test_path/test_name.csv"},
+                "bucket": {"name": "test_read_bucket"}}
+        }
+    ]}
 
 
 @pytest.fixture(scope="function", autouse=True)
@@ -66,6 +66,17 @@ class TestUtilFunctions:
         mock_convert_and_dump.assert_called_once_with(
             "test_path/test_name.csv", test_data, "test_dump_bucket"
         )
+
+    def test_if_transform_data_returns_None_no_parquet_created(self,
+                                                               mock_read,
+                                                               mock_transform,
+                                                               mock_convert):
+        mock_read.return_value = ''
+        mock_transform.return_value = None
+
+        lambda_handler(event=test_event, context=None)
+
+        assert mock_convert.call_count == 0
 
 
 @patch("src.processor.processor.logger")

@@ -40,25 +40,25 @@ class TestReadParquet:
         ]
 
         convert_and_dump_parquet(
-            filename="test_parquet_file.csv",
+            filename="staff/31-10-2023/31-10-2023-152600.csv",
             transformed_data=test_parquet_data,
             bucket_name="test_processed_bucket"
         )
 
         convert_and_dump_parquet(
-            filename="empty_parquet_file.csv",
+            filename="staff/31-10-2023/31-10-2023-162600.csv",
             transformed_data=[],
             bucket_name="test_processed_bucket"
         )
 
     def test_returns_string(self):
-        result = read_parquet("test_parquet_file.parquet",
+        result = read_parquet("dim_staff/31-10-2023/31-10-2023-152600.parquet",
                               "test_processed_bucket")
 
         assert isinstance(result, str)
 
     def test_returns_empty_str_if_passed_empty_file(self):
-        result = read_parquet("empty_parquet_file.parquet",
+        result = read_parquet("dim_staff/31-10-2023/31-10-2023-162600.parquet",
                               "test_processed_bucket")
 
         assert result == ""
@@ -70,7 +70,7 @@ class TestReadParquet:
 3,Jeanette,Erdman
 """
 
-        result = read_parquet("test_parquet_file.parquet",
+        result = read_parquet("dim_staff/31-10-2023/31-10-2023-152600.parquet",
                               "test_processed_bucket")
 
         assert result == expected
