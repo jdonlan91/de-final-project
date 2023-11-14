@@ -6,10 +6,28 @@ from pg8000.native import Connection, identifier, literal
 
 
 def transform_data(file_name, data):
-    transform_to_apply = "transform_" + file_name.split('/')[0]
-    transformed_data = globals()[transform_to_apply](data)
+    """Transforms data from source tables into star schema format.
 
-    return transformed_data
+    Args:
+        file_name <string> the file name where the data is stored.
+            Used for accessing the correct table transformation function.
+        data <list><dict> the data to be transformed.
+
+    Returns:
+        <list><dict> the transformed data as a list of dictionaries.
+            Returns an empty list if the data has no transformation available.
+    """
+    try:
+        table_name = file_name.split('/')[0]
+        transform_to_apply = "transform_" + table_name
+        transformed_data = globals()[transform_to_apply](data)
+
+        return transformed_data
+
+    except Exception as e:
+        if e == KeyError:
+            print(f'No available transformation for {table_name}')
+            return None
 
 
 def apply_data_type(string, data_type):
@@ -54,15 +72,19 @@ def query_database(table_name, column_name, foreign_key, foreign_key_value):
     db_credentials = get_db_credentials()
     conn = create_connection(db_credentials)
 
-    query = f"""
-        SELECT {identifier(column_name)}
-        FROM {identifier(table_name)}
-        WHERE {identifier(foreign_key)} = {literal(foreign_key_value)}
-    """
+    try:
+        query = f"""
+            SELECT {identifier(column_name)}
+            FROM {identifier(table_name)}
+            WHERE {identifier(foreign_key)} = {literal(foreign_key_value)}
+        """
 
-    query_result = conn.run(query)
+        query_result = conn.run(query)
 
-    return query_result[0][0]
+        return query_result[0][0]
+
+    finally:
+        conn.close()
 
 
 def transform_counterparty(data):
@@ -296,3 +318,7 @@ def transform_transaction(data):
     ]
 
     return transformed_data
+
+
+def transform_department(data):
+    pass
