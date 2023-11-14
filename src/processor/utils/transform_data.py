@@ -12,6 +12,15 @@ def transform_data(file_name, data):
     return transformed_data
 
 
+def apply_data_type(string, data_type):
+    if string == '':
+        return ''
+    elif data_type == int:
+        return int(string)
+    elif data_type == float:
+        return float(string)
+
+
 def get_db_credentials():
     secret_name = "totesys_db_credentials"
     region_name = "eu-west-2"
@@ -59,7 +68,7 @@ def query_database(table_name, column_name, foreign_key, foreign_key_value):
 def transform_counterparty(data):
     transformed_data = [
         {
-            "counterparty_id": int(row["counterparty_id"]),
+            "counterparty_id": apply_data_type(row["counterparty_id"], int),
             "counterparty_legal_name": row["counterparty_legal_name"],
             "counterparty_legal_address_line_1": query_database(
                 table_name="address",
@@ -111,10 +120,9 @@ def transform_counterparty(data):
 
 
 def transform_currency(data):
-
     transformed_data = [
         {
-            "currency_id": int(row["currency_id"]),
+            "currency_id": apply_data_type(row["currency_id"], int),
             "currency_code": row["currency_code"],
             "currency_name": ccy.currency(row["currency_code"]).name
         }
@@ -124,14 +132,10 @@ def transform_currency(data):
     return transformed_data
 
 
-# def transform_department():
-#     pass
-
-
 def transform_design(data):
     transformed_data = [
         {
-            "design_id": int(row["design_id"]),
+            "design_id": apply_data_type(row["design_id"], int),
             "design_name": row["design_name"],
             "file_location": row["file_location"],
             "file_name": row["file_name"]
@@ -145,7 +149,7 @@ def transform_design(data):
 def transform_staff(data):
     transformed_data = [
         {
-            "staff_id": int(row["staff_id"]),
+            "staff_id": apply_data_type(row["staff_id"], int),
             "first_name": row["first_name"],
             "last_name": row["last_name"],
             "department_name": query_database(
@@ -171,21 +175,23 @@ def transform_staff(data):
 def transform_sales_order(data):
     transformed_data = [
         {
-            "sales_order_id": int(row["sales_order_id"]),
+            "sales_order_id": apply_data_type(row["sales_order_id"], int),
             "created_date": row["created_at"][:10],
             "created_time": row["created_at"][11:],
             "last_updated_date": row["last_updated"][:10],
             "last_updated_time": row["last_updated"][11:],
-            "sales_staff_id": int(row["staff_id"]),
-            "counterparty_id": int(row["counterparty_id"]),
-            "units_sold": int(row["units_sold"]),
-            "unit_price": float(row["unit_price"]),
-            "currency_id": int(row["currency_id"]),
-            "design_id": int(row["design_id"]),
+            "sales_staff_id": apply_data_type(row["staff_id"], int),
+            "counterparty_id": apply_data_type(row["counterparty_id"], int),
+            "units_sold": apply_data_type(row["units_sold"], int),
+            "unit_price": apply_data_type(row["unit_price"], float),
+            "currency_id": apply_data_type(row["currency_id"], int),
+            "design_id": apply_data_type(row["design_id"], int),
             "agreed_payment_date": row["agreed_payment_date"],
             "agreed_delivery_date": row["agreed_delivery_date"],
-            "agreed_delivery_location_id": int(
-                row["agreed_delivery_location_id"])
+            "agreed_delivery_location_id": apply_data_type(
+                row["agreed_delivery_location_id"],
+                int
+            )
         }
         for row in data
     ]
@@ -196,7 +202,7 @@ def transform_sales_order(data):
 def transform_address(data):
     transformed_data = [
         {
-            "location_id": int(row["address_id"]),
+            "location_id": apply_data_type(row["address_id"], int),
             "address_line_1": row["address_line_1"],
             "address_line_2": row["address_line_2"],
             "district": row["district"],
@@ -211,17 +217,82 @@ def transform_address(data):
     return transformed_data
 
 
-# def transform_payment():
-#     pass
+def transform_payment(data):
+    transformed_data = [
+        {
+            "payment_id": apply_data_type(row["payment_id"], int),
+            "created_date": row["created_at"][:10],
+            "created_time": row["created_at"][11:],
+            "last_updated_date": row["last_updated"][:10],
+            "last_updated_time": row["last_updated"][11:],
+            "transaction_id": apply_data_type(row["transaction_id"], int),
+            "counterparty_id": apply_data_type(row["counterparty_id"], int),
+            "payment_amount": apply_data_type(row["payment_amount"], float),
+            "currency_id": apply_data_type(row["currency_id"], int),
+            "payment_type_id": apply_data_type(row["payment_type_id"], int),
+            "paid": row["paid"],
+            "payment_date": row["payment_date"]
+        }
+        for row in data
+    ]
+
+    return transformed_data
 
 
-# def transform_purchase_order():
-#     pass
+def transform_purchase_order(data):
+    transformed_data = [
+        {
+            "purchase_order_id": apply_data_type(
+                row["purchase_order_id"],
+                int
+            ),
+            "created_date": row["created_at"][:10],
+            "created_time": row["created_at"][11:],
+            "last_updated_date": row["last_updated"][:10],
+            "last_updated_time": row["last_updated"][11:],
+            "staff_id": apply_data_type(row["staff_id"], int),
+            "counterparty_id": apply_data_type(row["counterparty_id"], int),
+            "item_code": row["item_code"],
+            "item_quantity": apply_data_type(row["item_quantity"], int),
+            "item_unit_price": float(row["item_unit_price"]),
+            "currency_id": apply_data_type(row["currency_id"], int),
+            "agreed_delivery_date": row["agreed_delivery_date"],
+            "agreed_payment_date": row["agreed_payment_date"],
+            "agreed_delivery_location_id": apply_data_type(
+                row["agreed_delivery_location_id"],
+                int
+            )
+        }
+        for row in data
+    ]
+
+    return transformed_data
 
 
-# def transform_payment_type():
-#     pass
+def transform_payment_type(data):
+    transformed_data = [
+        {
+            "payment_type_id": apply_data_type(row["payment_type_id"], int),
+            "payment_type_name": row["payment_type_name"],
+        }
+        for row in data
+    ]
+
+    return transformed_data
 
 
-# def transform_transaction():
-#     pass
+def transform_transaction(data):
+    transformed_data = [
+        {
+            "transaction_id": apply_data_type(row["transaction_id"], int),
+            "transaction_type": row["transaction_type"],
+            "sales_order_id": apply_data_type(row["sales_order_id"], int),
+            "purchase_order_id": apply_data_type(
+                row["purchase_order_id"],
+                int
+            )
+        }
+        for row in data
+    ]
+
+    return transformed_data

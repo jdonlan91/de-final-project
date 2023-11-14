@@ -28,7 +28,6 @@ resource "aws_lambda_layer_version" "ingestor_pg8000_layer" {
     layer_name = "ingestor_pg8000_layer"
 }
 
-
 resource "aws_lambda_function" "processor" {
     function_name = "processor"
     filename = data.archive_file.processor_lambda.output_path
@@ -59,7 +58,6 @@ resource "aws_lambda_layer_version" "processor_ccy_layer" {
     filename = "${path.module}/../src/processor/ccy.zip"
     layer_name = "processor_ccy_layer"
 }
-
 
 resource "aws_lambda_permission" "allow_s3_ingested_to_invoke_processor" {
   action = "lambda:InvokeFunction"
