@@ -96,8 +96,8 @@ class TestTransformData:
 
 class TestApplyDataType:
     def test_returns_none_when_passed_empty_string(self):
-        assert apply_data_type('', int) == None
-        assert apply_data_type('', float) == None
+        assert apply_data_type('', int) is None
+        assert apply_data_type('', float) is None
 
     def test_returns_an_int(self):
         assert apply_data_type('5', int) == 5
