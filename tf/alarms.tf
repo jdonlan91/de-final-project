@@ -3,6 +3,33 @@ resource "aws_sns_topic" "error_alerting" {
 }
 
 
+resource "aws_cloudwatch_log_metric_filter" "ingestor_error" {
+    name = "IngestorErrorFilter"
+    pattern = "ERROR"
+    log_group_name = "/aws/lambda/ingestor"
+
+    metric_transformation {
+      name = "IngestorErrorCount"
+      namespace = "Basalt-Ingestor"
+      value = "1"
+    }
+}
+
+resource "aws_cloudwatch_metric_alarm" "alert_ingestor_error" {
+    alarm_name = "IngestorErrorAlarm"
+    comparison_operator = "GreaterThanOrEqualToThreshold"
+    evaluation_periods = 1
+    metric_name = "IngestorErrorCount"
+    namespace = "Basalt-Ingestor"
+    period = 60
+    statistic = "Sum"
+    threshold = 1
+    alarm_description = "Monitors Ingestor Lambda Error occurences"
+    alarm_actions = [aws_sns_topic.error_alerting.arn]
+    treat_missing_data = "notBreaching"
+}
+
+
 
 resource "aws_cloudwatch_log_metric_filter" "ingestor_interface_error" {
     name = "IngestorInterfaceErrorFilter"
@@ -142,6 +169,33 @@ resource "aws_cloudwatch_metric_alarm" "alert_ingestor_unexpected_error" {
     treat_missing_data = "notBreaching"
 }
 
+
+resource "aws_cloudwatch_log_metric_filter" "processor_error" {
+    name = "ProcessorErrorFilter"
+    pattern = "ERROR"
+    log_group_name = "/aws/lambda/processor"
+
+    metric_transformation {
+      name = "ProcessorErrorCount"
+      namespace = "Basalt-Processor"
+      value = "1"
+    }
+}
+
+resource "aws_cloudwatch_metric_alarm" "alert_processor_error" {
+    alarm_name = "ProcessorErrorAlarm"
+    comparison_operator = "GreaterThanOrEqualToThreshold"
+    evaluation_periods = 1
+    metric_name = "ProcessorErrorCount"
+    namespace = "Basalt-Processor"
+    period = 60
+    statistic = "Sum"
+    threshold = 1
+    alarm_description = "Monitors processor Lambda Error occurences"
+    alarm_actions = [aws_sns_topic.error_alerting.arn]
+    treat_missing_data = "notBreaching"
+}
+
 resource "aws_cloudwatch_log_metric_filter" "processor_interface_error" {
     name = "ProcessorInterfaceErrorFilter"
     pattern = "Error interacting with database."
@@ -276,6 +330,33 @@ resource "aws_cloudwatch_metric_alarm" "alert_processor_unexpected_error" {
     statistic = "Sum"
     threshold = 1
     alarm_description = "Monitors Unexpected Error occurences"
+    alarm_actions = [aws_sns_topic.error_alerting.arn]
+    treat_missing_data = "notBreaching"
+}
+
+
+resource "aws_cloudwatch_log_metric_filter" "loader_error" {
+    name = "LoaderErrorFilter"
+    pattern = "ERROR"
+    log_group_name = "/aws/lambda/loader"
+
+    metric_transformation {
+      name = "LoaderErrorCount"
+      namespace = "Basalt-Loader"
+      value = "1"
+    }
+}
+
+resource "aws_cloudwatch_metric_alarm" "alert_loader_error" {
+    alarm_name = "LoaderErrorAlarm"
+    comparison_operator = "GreaterThanOrEqualToThreshold"
+    evaluation_periods = 1
+    metric_name = "LoaderErrorCount"
+    namespace = "Basalt-Loader"
+    period = 60
+    statistic = "Sum"
+    threshold = 1
+    alarm_description = "Monitors loader Lambda Error occurences"
     alarm_actions = [aws_sns_topic.error_alerting.arn]
     treat_missing_data = "notBreaching"
 }
