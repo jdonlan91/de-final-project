@@ -108,7 +108,7 @@ class TestApplyDataType:
         assert apply_data_type('2.5', float) == 2.5
         assert apply_data_type('5', float) == 5.0
 
-    def test_returns_zero_when_passed_an_empty_string_and_transaction_table(self):  # noqa: F501
+    def test_returns_zero_when_passed_an_empty_string_and_transaction_table(self):  # noqa: E501
         assert apply_data_type('', float, "transaction") == 0
 
 
