@@ -100,7 +100,7 @@ class TestLogging:
 
         lambda_handler(event=test_event, context=None)
 
-        mock_logger.info.assert_called_once_with(
+        mock_logger.info.assert_any_call(
             f"File {test_filename} added to bucket test_dump_bucket"
         )
 

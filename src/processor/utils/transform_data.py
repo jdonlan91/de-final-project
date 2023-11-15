@@ -33,7 +33,7 @@ def apply_data_type(string, data_type):
     if string == '':
         return ''
     elif data_type == int:
-        return int(string)
+        return int(float(string))
     elif data_type == float:
         return float(string)
 

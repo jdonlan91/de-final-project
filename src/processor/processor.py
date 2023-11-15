@@ -34,6 +34,9 @@ def lambda_handler(event, context):
     """
     try:
         filename = event["Records"][0]["s3"]["object"]["key"]
+        logger.info(
+            f"Processing data from {filename}.")
+
         read_bucket_name = event["Records"][0]["s3"]["bucket"]["name"]
         dump_bucket_name = os.environ["PROCESSED_BUCKET_NAME"]
 
