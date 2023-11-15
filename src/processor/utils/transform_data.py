@@ -33,7 +33,7 @@ def apply_data_type(string, data_type):
     if string == '':
         return ''
     elif data_type == int:
-        return int(string)
+        return int(float(string))
     elif data_type == float:
         return float(string)
 
@@ -239,26 +239,26 @@ def transform_address(data):
     return transformed_data
 
 
-# def transform_payment(data):
-#     transformed_data = [
-#         {
-#             "payment_id": apply_data_type(row["payment_id"], int),
-#             "created_date": row["created_at"][:10],
-#             "created_time": row["created_at"][11:],
-#             "last_updated_date": row["last_updated"][:10],
-#             "last_updated": row["last_updated"][11:],
-#             "transaction_id": apply_data_type(row["transaction_id"], int),
-#             "counterparty_id": apply_data_type(row["counterparty_id"], int),
-#             "payment_amount": apply_data_type(row["payment_amount"], float),
-#             "currency_id": apply_data_type(row["currency_id"], int),
-#             "payment_type_id": apply_data_type(row["payment_type_id"], int),
-#             "paid": row["paid"],
-#             "payment_date": row["payment_date"]
-#         }
-#         for row in data
-#     ]
+def transform_payment(data):
+    transformed_data = [
+        {
+            "payment_id": apply_data_type(row["payment_id"], int),
+            "created_date": row["created_at"][:10],
+            "created_time": row["created_at"][11:],
+            "last_updated_date": row["last_updated"][:10],
+            "last_updated": row["last_updated"][11:],
+            "transaction_id": apply_data_type(row["transaction_id"], int),
+            "counterparty_id": apply_data_type(row["counterparty_id"], int),
+            "payment_amount": apply_data_type(row["payment_amount"], float),
+            "currency_id": apply_data_type(row["currency_id"], int),
+            "payment_type_id": apply_data_type(row["payment_type_id"], int),
+            "paid": row["paid"],
+            "payment_date": row["payment_date"]
+        }
+        for row in data
+    ]
 
-#     return transformed_data
+    return transformed_data
 
 
 def transform_purchase_order(data):
@@ -303,21 +303,21 @@ def transform_payment_type(data):
     return transformed_data
 
 
-# def transform_transaction(data):
-#     transformed_data = [
-#         {
-#             "transaction_id": apply_data_type(row["transaction_id"], int),
-#             "transaction_type": row["transaction_type"],
-#             "sales_order_id": apply_data_type(row["sales_order_id"], int),
-#             "purchase_order_id": apply_data_type(
-#                 row["purchase_order_id"],
-#                 int
-#             )
-#         }
-#         for row in data
-#     ]
+def transform_transaction(data):
+    transformed_data = [
+        {
+            "transaction_id": apply_data_type(row["transaction_id"], int),
+            "transaction_type": row["transaction_type"],
+            "sales_order_id": apply_data_type(row["sales_order_id"], int),
+            "purchase_order_id": apply_data_type(
+                row["purchase_order_id"],
+                int
+            )
+        }
+        for row in data
+    ]
 
-#     return transformed_data
+    return transformed_data
 
 
 def transform_department(data):
