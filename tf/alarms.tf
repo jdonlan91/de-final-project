@@ -23,7 +23,7 @@ resource "aws_cloudwatch_metric_alarm" "alert_ingestor_error" {
     namespace = "Basalt-Ingestor"
     period = 60
     statistic = "Sum"
-    threshold = 1
+    threshold = 4
     alarm_description = "Monitors Ingestor Lambda Error occurences"
     alarm_actions = [aws_sns_topic.error_alerting.arn]
     treat_missing_data = "notBreaching"
@@ -190,7 +190,7 @@ resource "aws_cloudwatch_metric_alarm" "alert_processor_error" {
     namespace = "Basalt-Processor"
     period = 60
     statistic = "Sum"
-    threshold = 1
+    threshold = 4
     alarm_description = "Monitors processor Lambda Error occurences"
     alarm_actions = [aws_sns_topic.error_alerting.arn]
     treat_missing_data = "notBreaching"
@@ -355,7 +355,7 @@ resource "aws_cloudwatch_metric_alarm" "alert_loader_error" {
     namespace = "Basalt-Loader"
     period = 60
     statistic = "Sum"
-    threshold = 1
+    threshold = 4
     alarm_description = "Monitors loader Lambda Error occurences"
     alarm_actions = [aws_sns_topic.error_alerting.arn]
     treat_missing_data = "notBreaching"
