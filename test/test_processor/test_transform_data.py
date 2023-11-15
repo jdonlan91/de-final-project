@@ -102,9 +102,11 @@ class TestApplyDataType:
 
     def test_returns_an_int(self):
         assert apply_data_type('5', int) == 5
+        assert apply_data_type('5.0', int) == 5
 
     def test_returns_a_floating_point_number(self):
         assert apply_data_type('2.5', float) == 2.5
+        assert apply_data_type('5', float) == 5.0
 
 
 class TestGetDbCredentials:
