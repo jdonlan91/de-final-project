@@ -18,9 +18,10 @@ from src.processor.utils.transform_data import (
     transform_staff,
     transform_sales_order,
     transform_address,
-    # transform_payment,
+    transform_payment,
     transform_purchase_order,
     transform_payment_type,
+    transform_transaction
 )
 
 from fixtures.transform_counterparty_data import test_counterparty_data  # noqa: F401,E501
@@ -29,10 +30,10 @@ from fixtures.transform_design_data import test_design_data  # noqa: F401
 from fixtures.transform_staff_data import test_staff_data  # noqa: F401
 from fixtures.transform_sales_data import test_sales_data  # noqa: F401
 from fixtures.transform_address_data import test_address_data  # noqa: F401
-# from fixtures.transform_payment_data import test_payment_data  # noqa: F401
+from fixtures.transform_payment_data import test_payment_data  # noqa: F401
 from fixtures.transform_purchase_order_data import test_purchase_order_data  # noqa: F401,E501
 from fixtures.transform_payment_type_data import test_payment_type_data  # noqa: F401,E501
-# from fixtures.transform_transaction_data import test_transaction_data  # noqa: F401,E501
+from fixtures.transform_transaction_data import test_transaction_data  # noqa: F401,E501
 
 
 class TestTransformData:
@@ -380,31 +381,31 @@ class TestTransformAddress():
         assert result == expected
 
 
-# class TestTransformPayment():
-#     def test_returns_list_of_dictionaries(
-#         self,
-#         test_payment_data  # noqa: F811
-#     ):
-#         test_input_payment_data, test_output_payment_data = test_payment_data
+class TestTransformPayment():
+    def test_returns_list_of_dictionaries(
+        self,
+        test_payment_data  # noqa: F811
+    ):
+        test_input_payment_data, test_output_payment_data = test_payment_data
 
-#         result = transform_payment(test_input_payment_data)
+        result = transform_payment(test_input_payment_data)
 
-#         assert isinstance(result, list)
+        assert isinstance(result, list)
 
-#         for item in result:
-#             assert isinstance(item, dict)
+        for item in result:
+            assert isinstance(item, dict)
 
-#     def test_returns_empty_list_if_passed_file_with_no_data(
-#         self,
-#         test_payment_data  # noqa: F811
-#     ):
-#         assert transform_payment([]) == []
+    def test_returns_empty_list_if_passed_file_with_no_data(
+        self,
+        test_payment_data  # noqa: F811
+    ):
+        assert transform_payment([]) == []
 
-#     def test_returns_transformed_data(self, test_payment_data):  # noqa: F811
-#         test_input_payment_data, test_output_payment_data = test_payment_data
-#         result = transform_payment(test_input_payment_data)
-#         expected = test_output_payment_data
-#         assert result == expected
+    def test_returns_transformed_data(self, test_payment_data):  # noqa: F811
+        test_input_payment_data, test_output_payment_data = test_payment_data
+        result = transform_payment(test_input_payment_data)
+        expected = test_output_payment_data
+        assert result == expected
 
 
 class TestTransformPurchaseOrder():
@@ -461,31 +462,31 @@ class TestTransformPaymentType():
         assert result == expected
 
 
-# class TestTransformTransaction():
-#     def test_returns_list_of_dictionaries(
-#         self,
-#         test_transaction_data  # noqa: F811
-#     ):
-#         test_input_transaction_data, test_output_transaction_data = test_transaction_data  # noqa: 501
+class TestTransformTransaction():
+    def test_returns_list_of_dictionaries(
+        self,
+        test_transaction_data  # noqa: F811
+    ):
+        test_input_transaction_data, test_output_transaction_data = test_transaction_data  # noqa: 501
 
-#         result = transform_transaction(test_input_transaction_data)
+        result = transform_transaction(test_input_transaction_data)
 
-#         assert isinstance(result, list)
+        assert isinstance(result, list)
 
-#         for item in result:
-#             assert isinstance(item, dict)
+        for item in result:
+            assert isinstance(item, dict)
 
-    # def test_returns_empty_list_if_passed_file_with_no_data(
-    #     self,
-    #     test_transaction_data  # noqa: F811
-    # ):
-    #     assert transform_transaction([]) == []
+    def test_returns_empty_list_if_passed_file_with_no_data(
+        self,
+        test_transaction_data  # noqa: F811
+    ):
+        assert transform_transaction([]) == []
 
-    # def test_returns_transformed_data(
-    #     self,
-    #     test_transaction_data  # noqa: F811
-    # ):
-    #     test_input_transaction_data, test_output_transaction_data = test_transaction_data  # noqa: 501
-    #     result = transform_transaction(test_input_transaction_data)
-    #     expected = test_output_transaction_data
-    #     assert result == expected
+    def test_returns_transformed_data(
+        self,
+        test_transaction_data  # noqa: F811
+    ):
+        test_input_transaction_data, test_output_transaction_data = test_transaction_data  # noqa: 501
+        result = transform_transaction(test_input_transaction_data)
+        expected = test_output_transaction_data
+        assert result == expected
