@@ -118,8 +118,8 @@ def transform_counterparty(data):
             ),
             "counterparty_legal_postal_code": query_database(
                 table_name="address",
-                column_name="district",
-                foreign_key="postal_code",
+                column_name="postal_code",
+                foreign_key="address_id",
                 foreign_key_value=row["legal_address_id"]
             ),
             "counterparty_legal_country": query_database(
