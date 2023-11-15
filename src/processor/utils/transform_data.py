@@ -24,12 +24,9 @@ def transform_data(file_name, data):
 
         return transformed_data
 
-    except Exception as e:
-        if e == KeyError:
-            print(f'No available transformation for {table_name}')
-            return None
-        else:
-            raise e
+    except KeyError:
+        print(f'No available transformation for {table_name}')
+        return None
 
 
 def apply_data_type(string, data_type):
