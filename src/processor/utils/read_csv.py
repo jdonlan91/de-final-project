@@ -19,7 +19,7 @@ def read_csv(file_name, bucket_name):
         Key=file_name
     )
     file_data = response['Body'].read().decode('utf-8').split('\n')
-    keys = file_data[0].split(',')
-    rows = [row.strip().split(',') for row in file_data[1:]]
+    keys = file_data[0].split('|')
+    rows = [row.strip().split('|') for row in file_data[1:]]
 
     return [dict(zip(keys, row)) for row in rows]

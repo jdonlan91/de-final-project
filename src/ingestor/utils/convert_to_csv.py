@@ -24,7 +24,7 @@ def convert_to_csv(list_of_dictionaries):
             return ""
 
         df = pd.DataFrame(list_of_dictionaries)
-        csv_string = df.to_csv(index=False)
+        csv_string = df.to_csv(index=False, sep="|")
         return csv_string.strip()
 
     except Exception as e:
