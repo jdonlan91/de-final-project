@@ -224,7 +224,7 @@ def transform_payment(data):
             "created_date": row["created_at"][:10],
             "created_time": row["created_at"][11:],
             "last_updated_date": row["last_updated"][:10],
-            "last_updated_time": row["last_updated"][11:],
+            "last_updated": row["last_updated"][11:],
             "transaction_id": apply_data_type(row["transaction_id"], int),
             "counterparty_id": apply_data_type(row["counterparty_id"], int),
             "payment_amount": apply_data_type(row["payment_amount"], float),

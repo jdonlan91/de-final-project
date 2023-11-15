@@ -113,7 +113,8 @@ def log_invocation_time(timestamp, log_group, log_stream):
 def get_previous_invocation(log_group, log_stream):
     conn = boto3.client("logs", region_name="eu-west-2")
     log_events = conn.get_log_events(
-        logGroupName=log_group, logStreamName=log_stream)['events']
+        logGroupName=log_group, logStreamName=log_stream,
+        startFromHead=True)['events']
 
     if len(log_events) == 0:
         return None
