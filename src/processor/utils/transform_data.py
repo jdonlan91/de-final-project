@@ -302,21 +302,21 @@ def transform_payment_type(data):
     return transformed_data
 
 
-def transform_transaction(data):
-    transformed_data = [
-        {
-            "transaction_id": apply_data_type(row["transaction_id"], int),
-            "transaction_type": row["transaction_type"],
-            "sales_order_id": apply_data_type(row["sales_order_id"], int),
-            "purchase_order_id": apply_data_type(
-                row["purchase_order_id"],
-                int
-            )
-        }
-        for row in data
-    ]
+# def transform_transaction(data):
+#     transformed_data = [
+#         {
+#             "transaction_id": apply_data_type(row["transaction_id"], int),
+#             "transaction_type": row["transaction_type"],
+#             "sales_order_id": apply_data_type(row["sales_order_id"], int),
+#             "purchase_order_id": apply_data_type(
+#                 row["purchase_order_id"],
+#                 int
+#             )
+#         }
+#         for row in data
+#     ]
 
-    return transformed_data
+#     return transformed_data
 
 
 def transform_department(data):

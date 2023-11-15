@@ -32,10 +32,10 @@ class TestReadCsv:
 
     @pytest.fixture(autouse=True)
     def create_test_csv_files(self, empty_bucket, s3):
-        test_csv_data = """id,firstname,lastname
-                        1,Rosanne,Harriman
-                        2,Hermione,Leler
-                        3,Bernardine,Cosenza"""
+        test_csv_data = """id|firstname|lastname
+                        1|Rosanne|Harriman
+                        2|Hermione|Leler
+                        3|Bernardine|Cosenza"""
 
         s3.put_object(
             Body=test_csv_data,
