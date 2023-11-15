@@ -1,3 +1,56 @@
+resource "aws_iam_policy" "ingestor_secretsmanager_access" {
+  name        = "IngestorSecretsManagerAccess"
+  description = "Policy for accessing secretsmanager"
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "secretsmanager:GetSecretValue"
+        ],
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_policy" "processor_secretsmanager_access" {
+  name        = "ProcessorSecretsManagerAccess"
+  description = "Policy for accessing secretsmanager"
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "secretsmanager:GetSecretValue"
+        ],
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+
+resource "aws_iam_policy" "loader_secretsmanager_access" {
+  name        = "LoaderSecretsManagerAccess"
+  description = "Policy for accessing secretsmanager"
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "secretsmanager:GetSecretValue"
+        ],
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+
 resource "aws_iam_policy" "s3_ingested_write_policy" {
   name        = "S3WritePolicyForIngested"
   description = "Policy for writing to Ingested Bucket"
@@ -186,24 +239,6 @@ resource "aws_iam_policy" "loader_history_logging_policy" {
 }
 
 
-resource "aws_iam_policy" "secretsmanager_access" {
-  name        = "SecretsManagerAccess"
-  description = "Policy for accessing secretsmanager"
-  policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Effect = "Allow",
-        Action = [
-          "secretsmanager:GetSecretValue"
-        ],
-        Resource = "*"
-      }
-    ]
-  })
-}
-
-
 resource "aws_iam_role" "ingestor_lambda_role" {
   name = "IngestorLambdaRole"
   assume_role_policy = jsonencode({
@@ -245,7 +280,7 @@ resource "aws_iam_policy_attachment" "ingestor_lambda_logging_policy_attachment"
 resource "aws_iam_policy_attachment" "ingestor_lambda_secretsmanager_access_attachment" {
   name       = "IngestorLambdaRoleSecretsManagerAccessAttachment"
   roles      = [aws_iam_role.ingestor_lambda_role.name]
-  policy_arn = aws_iam_policy.secretsmanager_access.arn
+  policy_arn = aws_iam_policy.ingestor_secretsmanager_access.arn
 }
 
 resource "aws_iam_role" "processor_lambda_role" {
@@ -289,7 +324,7 @@ resource "aws_iam_policy_attachment" "processor_lambda_logging_policy_attachment
 resource "aws_iam_policy_attachment" "processor_lambda_secretsmanager_access_attachment" {
   name       = "ProcessorLambdaRoleSecretsManagerAccessAttachment"
   roles      = [aws_iam_role.processor_lambda_role.name]
-  policy_arn = aws_iam_policy.secretsmanager_access.arn
+  policy_arn = aws_iam_policy.processor_secretsmanager_access.arn
 }
 
 resource "aws_iam_role" "loader_lambda_role" {
@@ -330,7 +365,7 @@ resource "aws_iam_policy_attachment" "loader_lambda_s3_list_files_policy_attachm
 resource "aws_iam_policy_attachment" "loader_lambda_secretsmanager_access_attachment" {
   name       = "LoaderLambdaRoleSecretsManagerAccessAttachment"
   roles      = [aws_iam_role.loader_lambda_role.name]
-  policy_arn = aws_iam_policy.secretsmanager_access.arn
+  policy_arn = aws_iam_policy.loader_secretsmanager_access.arn
 }
 
 

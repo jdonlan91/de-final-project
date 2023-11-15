@@ -28,6 +28,8 @@ def transform_data(file_name, data):
         if e == KeyError:
             print(f'No available transformation for {table_name}')
             return None
+        else:
+            raise e
 
 
 def apply_data_type(string, data_type):
