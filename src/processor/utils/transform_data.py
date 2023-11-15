@@ -29,9 +29,13 @@ def transform_data(file_name, data):
         return None
 
 
-def apply_data_type(string, data_type):
+def apply_data_type(string, data_type, table_name=None):
     if string == '':
-        return None
+        if table_name == 'transaction':
+            print('transaction table')
+            return 0
+        else:
+            return None
     elif data_type == int:
         return int(float(string))
     elif data_type == float:
@@ -308,10 +312,15 @@ def transform_transaction(data):
         {
             "transaction_id": apply_data_type(row["transaction_id"], int),
             "transaction_type": row["transaction_type"],
-            "sales_order_id": apply_data_type(row["sales_order_id"], int),
+            "sales_order_id": apply_data_type(
+                row["sales_order_id"],
+                int,
+                'transaction'
+            ),
             "purchase_order_id": apply_data_type(
                 row["purchase_order_id"],
-                int
+                int,
+                'transaction'
             )
         }
         for row in data
