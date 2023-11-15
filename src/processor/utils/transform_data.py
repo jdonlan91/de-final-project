@@ -79,7 +79,8 @@ def query_database(table_name, column_name, foreign_key, foreign_key_value):
         """
 
         query_result = conn.run(query)
-
+        if query_result == []:
+            return None
         return query_result[0][0]
 
     finally:
