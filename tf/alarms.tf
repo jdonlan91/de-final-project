@@ -6,7 +6,7 @@ resource "aws_sns_topic" "error_alerting" {
 resource "aws_cloudwatch_log_metric_filter" "ingestor_error" {
     name = "IngestorErrorFilter"
     pattern = "ERROR"
-    log_group_name = "/aws/lambda/ingestor"
+    log_group_name = aws_cloudwatch_log_group.ingestor_log_group.name
 
     metric_transformation {
       name = "IngestorErrorCount"
@@ -34,7 +34,7 @@ resource "aws_cloudwatch_metric_alarm" "alert_ingestor_error" {
 resource "aws_cloudwatch_log_metric_filter" "ingestor_interface_error" {
     name = "IngestorInterfaceErrorFilter"
     pattern = "Error interacting with source database"
-    log_group_name = "/aws/lambda/ingestor"
+    log_group_name = aws_cloudwatch_log_group.ingestor_log_group.name
 
     metric_transformation {
       name = "IngestorInterfaceErrorCount"
@@ -62,7 +62,7 @@ resource "aws_cloudwatch_metric_alarm" "alert_ingestor_interface_error" {
 resource "aws_cloudwatch_log_metric_filter" "ingestor_resource_not_found_error" {
     name = "IngestorResourceNotFoundError"
     pattern = "Error getting database credentials from Secrets Manager."
-    log_group_name = "/aws/lambda/ingestor"
+    log_group_name = aws_cloudwatch_log_group.ingestor_log_group.name
 
     metric_transformation {
       name = "IngestorResourceNotFoundErrorCount"
@@ -90,7 +90,7 @@ resource "aws_cloudwatch_metric_alarm" "alert_ingestor_resource_not_found_error"
 resource "aws_cloudwatch_log_metric_filter" "ingestor_no_such_bucket_error" {
     name = "IngestorNoSuchBucketError"
     pattern = "Error writing file to ingested bucket."
-    log_group_name = "/aws/lambda/ingestor"
+    log_group_name = aws_cloudwatch_log_group.ingestor_log_group.name
 
     metric_transformation {
       name = "IngestorNoSuchBucketErrorCount"
@@ -118,7 +118,7 @@ resource "aws_cloudwatch_metric_alarm" "alert_ingestor_no_such_bucket_error" {
 resource "aws_cloudwatch_log_metric_filter" "ingestor_client_error" {
     name = "IngestorClientError"
     pattern = "AWS client error"
-    log_group_name = "/aws/lambda/ingestor"
+    log_group_name = aws_cloudwatch_log_group.ingestor_log_group.name
 
     metric_transformation {
       name = "IngestorClientErrorCount"
@@ -146,7 +146,7 @@ resource "aws_cloudwatch_metric_alarm" "alert_ingestor_client_error" {
 resource "aws_cloudwatch_log_metric_filter" "ingestor_unexpected_error" {
     name = "IngestorUnexpectedError"
     pattern = "Unexpected error occurred."
-    log_group_name = "/aws/lambda/ingestor"
+    log_group_name = aws_cloudwatch_log_group.ingestor_log_group.name
 
     metric_transformation {
       name = "IngestorUnexpectedErrorCount"
@@ -173,7 +173,7 @@ resource "aws_cloudwatch_metric_alarm" "alert_ingestor_unexpected_error" {
 resource "aws_cloudwatch_log_metric_filter" "processor_error" {
     name = "ProcessorErrorFilter"
     pattern = "ERROR"
-    log_group_name = "/aws/lambda/processor"
+    log_group_name = aws_cloudwatch_log_group.processor_log_group.name
 
     metric_transformation {
       name = "ProcessorErrorCount"
@@ -199,7 +199,7 @@ resource "aws_cloudwatch_metric_alarm" "alert_processor_error" {
 resource "aws_cloudwatch_log_metric_filter" "processor_interface_error" {
     name = "ProcessorInterfaceErrorFilter"
     pattern = "Error interacting with database."
-    log_group_name = "/aws/lambda/processor"
+    log_group_name = aws_cloudwatch_log_group.processor_log_group.name
 
     metric_transformation {
       name = "ProcessorInterfaceErrorCount"
@@ -227,7 +227,7 @@ resource "aws_cloudwatch_metric_alarm" "alert_processor_interface_error" {
 resource "aws_cloudwatch_log_metric_filter" "processor_resource_not_found_error" {
     name = "ProcessorResourceNotFoundError"
     pattern = "Error getting database credentials from Secrets Manager."
-    log_group_name = "/aws/lambda/processor"
+    log_group_name = aws_cloudwatch_log_group.processor_log_group.name
 
     metric_transformation {
       name = "ProcessorResourceNotFoundErrorCount"
@@ -255,7 +255,7 @@ resource "aws_cloudwatch_metric_alarm" "alert_processor_resource_not_found_error
 resource "aws_cloudwatch_log_metric_filter" "processor_no_such_bucket_error" {
     name = "ProcessorNoSuchBucketError"
     pattern = "Error accesing the bucket. NoSuchBucket."
-    log_group_name = "/aws/lambda/processor"
+    log_group_name = aws_cloudwatch_log_group.processor_log_group.name
 
     metric_transformation {
       name = "ProcessorNoSuchBucketErrorCount"
@@ -283,7 +283,7 @@ resource "aws_cloudwatch_metric_alarm" "alert_processor_no_such_bucket_error" {
 resource "aws_cloudwatch_log_metric_filter" "processor_client_error" {
     name = "ProcessorClientError"
     pattern = "AWS client error"
-    log_group_name = "/aws/lambda/processor"
+    log_group_name = aws_cloudwatch_log_group.processor_log_group.name
 
     metric_transformation {
       name = "ProcessorClientErrorCount"
@@ -311,7 +311,7 @@ resource "aws_cloudwatch_metric_alarm" "alert_processor_client_error" {
 resource "aws_cloudwatch_log_metric_filter" "processor_unexpected_error" {
     name = "ProcessorUnexpectedError"
     pattern = "Unexpected error occurred."
-    log_group_name = "/aws/lambda/processor"
+    log_group_name = aws_cloudwatch_log_group.processor_log_group.name
 
     metric_transformation {
       name = "ProcessorUnexpectedErrorCount"
@@ -338,7 +338,7 @@ resource "aws_cloudwatch_metric_alarm" "alert_processor_unexpected_error" {
 resource "aws_cloudwatch_log_metric_filter" "loader_error" {
     name = "LoaderErrorFilter"
     pattern = "ERROR"
-    log_group_name = "/aws/lambda/loader"
+    log_group_name = aws_cloudwatch_log_group.loader_log_group.name
 
     metric_transformation {
       name = "LoaderErrorCount"
@@ -365,7 +365,7 @@ resource "aws_cloudwatch_metric_alarm" "alert_loader_error" {
 resource "aws_cloudwatch_log_metric_filter" "loader_interface_error" {
     name = "LoaderInterfaceErrorFilter"
     pattern = "Error interacting with database."
-    log_group_name = "/aws/lambda/loader"
+    log_group_name = aws_cloudwatch_log_group.loader_log_group.name
 
     metric_transformation {
       name = "LoaderInterfaceErrorCount"
@@ -393,7 +393,7 @@ resource "aws_cloudwatch_metric_alarm" "alert_loader_interface_error" {
 resource "aws_cloudwatch_log_metric_filter" "loader_resource_not_found_error" {
     name = "LoaderResourceNotFoundError"
     pattern = "Error getting database credentials from Secrets Manager."
-    log_group_name = "/aws/lambda/loader"
+    log_group_name = aws_cloudwatch_log_group.loader_log_group.name
 
     metric_transformation {
       name = "loaderResourceNotFoundErrorCount"
@@ -421,7 +421,7 @@ resource "aws_cloudwatch_metric_alarm" "alert_loader_resource_not_found_error" {
 resource "aws_cloudwatch_log_metric_filter" "loader_no_such_bucket_error" {
     name = "LoaderNoSuchBucketError"
     pattern = "Error accesing the bucket. NoSuchBucket."
-    log_group_name = "/aws/lambda/loader"
+    log_group_name = aws_cloudwatch_log_group.loader_log_group.name
 
     metric_transformation {
       name = "loaderNoSuchBucketErrorCount"
@@ -449,7 +449,7 @@ resource "aws_cloudwatch_metric_alarm" "alert_loader_no_such_bucket_error" {
 resource "aws_cloudwatch_log_metric_filter" "loader_client_error" {
     name = "LoaderClientError"
     pattern = "AWS client error"
-    log_group_name = "/aws/lambda/loader"
+    log_group_name = aws_cloudwatch_log_group.loader_log_group.name
 
     metric_transformation {
       name = "loaderClientErrorCount"
@@ -477,7 +477,7 @@ resource "aws_cloudwatch_metric_alarm" "alert_loader_client_error" {
 resource "aws_cloudwatch_log_metric_filter" "loader_unexpected_error" {
     name = "LoaderUnexpectedError"
     pattern = "Unexpected error occurred."
-    log_group_name = "/aws/lambda/loader"
+    log_group_name = aws_cloudwatch_log_group.loader_log_group.name
 
     metric_transformation {
       name = "loaderUnexpectedErrorCount"

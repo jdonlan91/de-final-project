@@ -18,9 +18,13 @@ resource "aws_lambda_layer_version" "ingestor_utils_layer" {
     source_code_hash = data.archive_file.ingestor_utils.output_base64sha256
 }
 
+resource "aws_cloudwatch_log_group" "ingestor_log_group" {
+  name = "/aws/lambda/ingestor"
+  }
+
 resource "aws_cloudwatch_log_stream" "ingestor_history" {
   name           = "ingestor_history"
-  log_group_name = "/aws/lambda/${aws_lambda_function.ingestor.function_name}"
+  log_group_name = aws_cloudwatch_log_group.ingestor_log_group.name
 }
 
 resource "aws_lambda_layer_version" "pg8000_layer" {
@@ -47,6 +51,10 @@ resource "aws_lambda_function" "processor" {
       }
     }
 }
+
+resource "aws_cloudwatch_log_group" "processor_log_group" {
+  name = "/aws/lambda/processor"
+  }
 
 
 resource "aws_lambda_layer_version" "processor_utils_layer" {
@@ -81,6 +89,10 @@ resource "aws_lambda_function" "loader" {
     timeout = 300
 }
 
+resource "aws_cloudwatch_log_group" "loader_log_group" {
+  name = "/aws/lambda/loader"
+  }
+
 
 resource "aws_lambda_layer_version" "loader_utils_layer" {
     filename = data.archive_file.loader_utils.output_path
@@ -91,5 +103,5 @@ resource "aws_lambda_layer_version" "loader_utils_layer" {
 
 resource "aws_cloudwatch_log_stream" "loader_history" {
   name           = "loader_history"
-  log_group_name = "/aws/lambda/${aws_lambda_function.loader.function_name}"
+  log_group_name = aws_cloudwatch_log_group.loader_log_group.name
 }
