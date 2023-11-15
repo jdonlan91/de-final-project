@@ -31,7 +31,7 @@ def transform_data(file_name, data):
 
 def apply_data_type(string, data_type):
     if string == '':
-        return ''
+        return None
     elif data_type == int:
         return int(float(string))
     elif data_type == float:
