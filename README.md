@@ -16,7 +16,7 @@ with advice and support from:
 
 Welcome to the repo for the final project of Team Basalt - completed across three weeks in Q4 2023 as part of the Data Engineering Bootcamp at Northcoders.
 
-A full specification can be found in ProjectSpecification.md in the root directory of this project - here is a brief summary.
+A full brief can be found in the [Project Specification](/readme_files/ProjectSpecification.md) - here is a brief summary.
 
 **Background**
 
@@ -34,7 +34,9 @@ All components of this system are hosted in the cloud on Amazon Web Services.
 
 ### Implementation
 
-A visual overview of the data pipeline can be seen in the PipelineDiagram.png file in the root directory of this project.
+Here is a visual overview of the data pipeline, highlighting the flow of data through the pipeline, and the AWS services used for each component:
+
+![A visual overview of the data pipeline](/readme_files/PipelineDiagram.png "Data Pipeline - Team Basalt")
 
 ### Installation and Deployment
 
