@@ -4,7 +4,7 @@
 
 - Christopher Johnston []()
 - Iuliia Kostina []()
-- Joseph Donlan [/jdonlan91](https://github.com/jdonlan91)
+- Joseph Donlan ([GitHub](https://github.com/jdonlan91))
 - Santhy Tamang []()
 
 with advice and support from:
