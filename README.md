@@ -2,15 +2,15 @@
 
 ### Contributors
 
-- Christopher Johnston []()
-- Iuliia Kostina []()
-- Joseph Donlan ([GitHub](https://github.com/jdonlan91))
-- Santhy Tamang []()
+- Christopher Johnston ([GitHub](https://github.com/CJohnston079), [LinkedIn](http://www.linkedin.com/in/christopher-johnston-122221219))
+- Iuliia Kostina ([GitHub](https://github.com/IuliaKostina), [LinkedIn](http://linkedin.com/in/iuliia-kostina))
+- Joseph Donlan ([GitHub](https://github.com/jdonlan91), [LinkedIn](https://www.linkedin.com/in/joedonlanphd/))
+- Santhy Tamang ([GitHub](https://github.com/santhyt), [LinkedIn](https://www.linkedin.com/in/santhy-tamang-1280071a/))
 
 with advice and support from:
 
-- Danika Crawley []()
-- Joe Mulvey []()
+- Danika Crawley
+- Joe Mulvey
 
 ### Overview
 
@@ -37,6 +37,22 @@ All components of this system are hosted in the cloud on Amazon Web Services.
 Here is a visual overview of the data pipeline, highlighting the flow of data through the pipeline, and the AWS services used for each component:
 
 ![A visual overview of the data pipeline](/readme_files/PipelineDiagram.png "Data Pipeline - Team Basalt")
+
+The core of our pipeline consists of three Lambda functions. Each of these functions is written in Python, with code that is checked for security vulnerabilities and PEP-8 compliance, as well as unit-tested with a test coverage of 99%. All Lambda functions and separate utils functions have docstrings which describe their arguments, return values and behaviour in detail.
+
+1. The ingestor function fetches all newly updated data from the source database, converts this to .csv format, and deposits this data in AWS S3 'ingested' bucket. It is triggered by an EventBridge event every 5 minutes.
+
+The ingestor keeps a log of its ingestion history: on the first invocation it fetches all data from the source database; on subsequent invocations it fetches only data which has been added to the database since the previous invocation.
+
+2. The processor function transforms the data from .csv to .parquet format. It is triggered upon deposition of a .csv file in the ingested S3 bucket, and applies the appropriate transformation function to reformat the data from the source table to match the star schema of the destination warehouse. It then converts the remodelled data to .parquet format and deposits it into a 'processed' bucket, which acts as the data lake.
+
+3. The loader function populates the destination data warehouse with data from the .parquet files. It fetches newly added .parquet files from the processed S3 bucket, reads the data from these files and then loads the data into the warehouse.
+
+Like the ingester, the loader is triggered at 5-minute intervals and tracks its invocation history. On the first invocation it fetches all files from processed bucket and also seeds the dim_date database with entries for every day in a 3-year range; on subsequent invocations it loads only data from .parquet files which arrived in the processed bucket since the previous invocation.
+
+We deployed all of our AWS infrastructure via an Infrastructure-As-Code approach using Terraform. This allowed us to reproducibly deploy the infrastructure, ensure all the components correctly referenced each other, and are deployed in the correct order. We stored the Terraform state information and other back-end files in a separately deployed S3 bucket, and database credentials were stored securely in AWS Secrets Manager.
+
+To ensure our pipeline continues to run stably and that it successfully processes data that continually arrives in the source data warehouse, we set up a robust monitoring and alerting process. All lambda functions have detailed AWS Cloudwatch logs of their behaviour and we created metrics to track different types of errors for the three lambdas. If errors occur they trigger custom Cloudwatch alarms linked to AWS SNS topics which allow us to receive immediate email notifications.
 
 ### Installation and Deployment
 
